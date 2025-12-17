@@ -1,0 +1,153 @@
+/* --- إعدادات عامة --- */
+body {
+    font-family: 'Cairo', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* --- الترويسة (Header) --- */
+header {
+    background-color: #004d40;
+    color: #fff;
+    padding: 2rem 1rem;
+    border-bottom: 5px solid #00796b;
+    text-align: center;
+}
+header h1 { margin: 0; font-size: 2.5rem; }
+header .subtitle { margin: 0; font-size: 1.2rem; opacity: 0.9; }
+
+/* --- المحتوى الرئيسي --- */
+main {
+    padding: 1rem;
+    max-width: 900px;
+    margin: 2rem auto;
+}
+
+/* --- قسم رسالة من نور --- */
+#message-of-light {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-right: 5px solid #00796b;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: 5px;
+    text-align: right;
+}
+#message-of-light h2 { margin-top: 0; color: #004d40; }
+#message-of-light p { font-size: 1.5rem; font-style: italic; margin-bottom: 0.5rem; }
+#message-of-light small { color: #777; }
+
+/* --- قسم السور --- */
+#quran-surahs h2 {
+    text-align: center;
+    color: #004d40;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+#surah-list-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+    text-align: right;
+}
+
+.surah-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+.surah-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.surah-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+.surah-name { font-size: 1.2rem; font-weight: bold; color: #004d40; }
+.surah-number {
+    background-color: #00796b;
+    color: white;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+}
+.surah-details { font-size: 0.9rem; color: #666; }
+
+/* --- النافذة المنبثقة (Modal) --- */
+.modal {
+    display: none; /* مخفية بشكل افتراضي */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.6);
+}
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 10px;
+    text-align: right;
+    position: relative;
+}
+.close-button {
+    color: #aaa;
+    position: absolute;
+    left: 15px;
+    top: 10px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.close-button:hover, .close-button:focus { color: black; }
+
+#player-container label { display: block; margin-bottom: 10px; }
+#player-container select { width: 100%; padding: 8px; margin-bottom: 15px; }
+#player-container audio { width: 100%; }
+
+/* --- مؤشر التحميل --- */
+.loading-spinner {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #00796b;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 50px auto;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* --- التذييل (Footer) --- */
+footer {
+    margin-top: 3rem;
+    padding: 1rem;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+}

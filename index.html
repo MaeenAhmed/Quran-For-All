@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quran For All Project</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <h1>مشروع القرآن للجميع</h1>
+        <p class="subtitle">An Open Source Project for Spreading the Light of the Holy Quran</p>
+    </header>
+
+    <main>
+        <section id="message-of-light">
+            <h2>رسالة من نور</h2>
+            <p>"وَمَا أَرْسَلْنَاكَ إِلَّا رَحْمَةً لِّلْعَالَمِينَ"</p>
+            <small>(سورة الأنبياء، الآية 107 )</small>
+        </section>
+
+        <section id="quran-surahs">
+            <h2>سور القرآن الكريم (114)</h2>
+            <div id="surah-list-container">
+                <div class="loading-spinner"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- النافذة المنبثقة لمشغل الصوت -->
+    <div id="audio-player-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3 id="modal-surah-name"></h3>
+            <div id="player-container">
+                <label for="reciter-select">اختر القارئ:</label>
+                <select id="reciter-select"></select>
+                <audio id="audio-player" controls>
+                    <source src="" type="audio/mpeg">
+                    متصفحك لا يدعم تشغيل الصوت.
+                </audio>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Quran-For-All Project - 2025</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
