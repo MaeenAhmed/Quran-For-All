@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const audioPlayer = document.getElementById('audio-player');
     const closeButton = document.querySelector('.close-button');
 
-    // قائمة القراء المحدثة بناءً على طلبك
+    // قائمة القراء المحدثة
     const reciters = {
         "Abdulaziz_Al-Zahrani": "عبدالعزيز الزهراني (سحيم)",
         "Nasser_Al_qatami": "ناصر القطامي",
@@ -25,9 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
         reciterSelect.appendChild(option);
     }
 
-    // دالة لجلب وعرض السور
+    // دالة لجلب وعرض السور باستخدام رابط HTTPS
     async function fetchAndDisplaySurahs() {
         try {
+            // استخدام رابط HTTPS الآمن
             const response = await fetch('https://api.alquran.cloud/v1/surah' );
             if (!response.ok) throw new Error(`Network Error: ${response.statusText}`);
             
@@ -57,17 +58,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error('Error fetching Surahs:', error);
-            surahContainer.innerHTML = '<p style="color: red; text-align: center;">Sorry, an error occurred while loading the Surahs.</p>';
+            surahContainer.innerHTML = '<p style="color: red; text-align: center;">عذرًا، حدث خطأ أثناء تحميل قائمة السور. قد يكون بسبب سياسة أمان المتصفح.</p>';
         }
     }
 
-    // دالة لتحديث مشغل الصوت
+    // دالة لتحديث مشغل الصوت باستخدام رابط HTTPS
     function updateAudioPlayer() {
         let surahNumber = modal.dataset.currentSurah;
         const reciterIdentifier = reciterSelect.value;
         
         if (surahNumber && reciterIdentifier) {
             surahNumber = surahNumber.padStart(3, '0');
+            // استخدام رابط HTTPS الآمن لخادم الصوت
             const audioUrl = `https://server11.mp3quran.net/${reciterIdentifier}/${surahNumber}.mp3`;
             
             audioPlayer.src = audioUrl;
