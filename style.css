@@ -1,52 +1,71 @@
-/* --- إعدادات عامة --- */
-body { font-family: 'Cairo', sans-serif; margin: 0; padding: 0; background-color: #f4f4f9; color: #333; line-height: 1.6; }
-header { background-color: #004d40; color: #fff; padding: 2rem 1rem; border-bottom: 5px solid #00796b; text-align: center; }
-header h1 { margin: 0; font-size: 2.5rem; }
-header .subtitle { margin: 0; font-size: 1.2rem; opacity: 0.9; }
-main { padding: 1rem; max-width: 900px; margin: 2rem auto; }
-.error-message { color: #D32F2F; text-align: center; padding: 10px; background-color: #FFCDD2; border: 1px solid #D32F2F; border-radius: 5px; }
+@import url('https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Roboto&display=swap' );
 
-/* --- الصفحة الرئيسية --- */
-#message-of-light { background-color: #fff; border: 1px solid #ddd; border-right: 5px solid #00796b; padding: 1.5rem; margin-bottom: 2rem; border-radius: 5px; text-align: right; }
-#message-of-light h2 { margin-top: 0; color: #004d40; }
-#message-of-light p { font-size: 1.5rem; font-style: italic; margin-bottom: 0.5rem; margin-top: 0; }
-#message-of-light small { color: #777; display: block; margin-top: 10px; }
-#message-of-light .translation { font-size: 1rem; font-style: normal; color: #555; margin-top: 10px; border-top: 1px dashed #eee; padding-top: 10px; direction: ltr; text-align: left; }
-#quran-surahs h2 { text-align: center; color: #004d40; border-bottom: 2px solid #eee; padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
-#surah-list-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; text-align: right; }
-.surah-card { background-color: #fff; border: 1px solid #ddd; border-radius: 5px; padding: 1rem; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; text-decoration: none; color: inherit; }
-.surah-card:hover { transform: translateY(-5px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-.surah-card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; margin-bottom: 0.5rem; }
-.surah-name { font-size: 1.2rem; font-weight: bold; color: #004d40; }
-.surah-number { background-color: #00796b; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
-.surah-details { font-size: 0.9rem; color: #666; }
-
-/* --- مؤشر التحميل --- */
-.loading-spinner { border: 5px solid #f3f3f3; border-top: 5px solid #00796b; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 50px auto; }
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-/* --- التذييل --- */
-footer { margin-top: 3rem; padding: 1rem; background-color: #333; color: #fff; text-align: center; }
-footer .credit { font-size: 0.9rem; color: #ccc; }
-
-/* --- صفحة عرض السورة (surah.html) --- */
-#audio-player-section { background-color: #fff; padding: 1.5rem; border-radius: 5px; margin-bottom: 2rem; border: 1px solid #ddd; }
-#audio-player-section h3 { margin-top: 0; }
-#audio-player-section select { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; }
-#audio-player-section audio { width: 100%; }
-.mushaf-container { background-color: #fff; border: 1px solid #ddd; padding: 2rem; border-radius: 5px; }
-.bismillah { font-family: 'Amiri Quran', serif; font-size: 2rem; text-align: center; padding-bottom: 1.5rem; border-bottom: 1px solid #eee; margin-bottom: 1.5rem; }
-.mushaf-text {
-    font-family: 'Amiri Quran', serif;
-    font-size: 2.2rem;
-    line-height: 2.8;
-    text-align: justify;
-    direction: rtl;
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f8f9fa;
 }
-.ayah-marker {
-    color: #00796b;
+
+.arabic-text, h1, .lead {
+    font-family: 'Amiri Quran', 'Noto Naskh Arabic', serif;
+}
+
+#surah-grid .surah-card {
+    text-decoration: none;
+    color: #212529;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#surah-grid .surah-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+#ayah-container .ayah-block {
+    border-bottom: 1px solid #e0e0e0;
+    padding: 1.5rem 0;
+}
+
+#ayah-container .ayah-block:last-child {
+    border-bottom: none;
+}
+
+.ayah-text {
+    font-size: 1.8rem;
+    line-height: 2.5;
+    text-align: right;
+}
+
+.translation-text {
+    font-size: 1rem;
+    color: #555;
+    text-align: left;
+    direction: ltr;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed #ccc;
+}
+
+.ayah-number {
+    font-size: 1.2rem;
+    color: #0d6efd;
+    font-weight: bold;
+}
+
+.play-button {
+    cursor: pointer;
+    color: #0d6efd;
     font-size: 1.5rem;
-    vertical-align: middle;
 }
-.back-link { display: inline-block; margin-top: 2rem; padding: 10px 20px; background-color: #004d40; color: white; text-decoration: none; border-radius: 5px; transition: background-color 0.2s; }
-.back-link:hover { background-color: #00796b; }
+
+.ayah-highlight {
+    background-color: rgba(255, 255, 0, 0.4);
+    border-radius: 5px;
+}
+
+#audio-player-container {
+    z-index: 1030;
+}
+
+#surah-header {
+    border-bottom: 1px solid #dee2e6;
+}

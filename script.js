@@ -1,80 +1,97 @@
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("Quran-For-All Project: Page is ready.");
+    const surahGrid = document.getElementById('surah-grid');
+    const reciterSelect = document.getElementById('reciter-select');
+    const translationSelect = document.getElementById('translation-select');
+    const loadingIndicator = document.getElementById('loading-indicator');
 
-    // --- دالة عرض الرسائل النورانية ---
-    function displayRandomMessage() {
-        // التأكد من أن ملف messages.js قد تم تحميله وأن المصفوفة موجودة
-        if (typeof messagesOfLight !== 'undefined' && messagesOfLight.length > 0) {
-            const randomIndex = Math.floor(Math.random() * messagesOfLight.length);
-            const message = messagesOfLight[randomIndex];
+    const QURAN_API_BASE = 'https://api.alquran.cloud/v1';
 
-            document.getElementById('arabic-message').textContent = message.arabic;
-            document.getElementById('english-message').textContent = message.english;
-            document.getElementById('message-source').textContent = message.source;
-        } else {
-            console.error("Error: 'messagesOfLight' array not found or is empty.");
-        }
+    function showLoading(show ) {
+        loadingIndicator.style.display = show ? 'block' : 'none';
     }
 
-    // --- إعدادات العناصر ---
-    const surahContainer = document.getElementById('surah-list-container');
-
-    // --- دالة جلب وعرض السور ---
-    async function fetchAndDisplaySurahs() {
+    async function fetchData(endpoint) {
         try {
-            // جلب قائمة السور من الـ API
-            const response = await fetch('https://api.alquran.cloud/v1/surah' );
-            if (!response.ok) throw new Error(`Network Error: ${response.statusText}`);
-            
+            const response = await fetch(`${QURAN_API_BASE}/${endpoint}`);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const data = await response.json();
-            if (data.code !== 200) throw new Error('Invalid data from API');
-
-            // إفراغ الحاوية من مؤشر التحميل
-            surahContainer.innerHTML = '';
-            
-            // إنشاء بطاقة لكل سورة
-            data.data.forEach(surah => {
-                // استخدام عنصر <a> لجعله رابطًا قابلاً للنقر
-                const card = document.createElement('a'); 
-                card.href = `surah.html?surah=${surah.number}`; // الرابط إلى الصفحة الجديدة مع تمرير رقم السورة
-                card.className = 'surah-card';
-                card.dataset.surahNumber = surah.number;
-
-                const revelationType = surah.revelationType === 'Meccan' ? 'مكية' : 'مدنية';
-                
-                // ملء محتوى البطاقة
-                card.innerHTML = `
-                    <div class="surah-card-header">
-                        <span class="surah-name">${surah.name}</span>
-                        <span class="surah-number">${surah.number}</span>
-                    </div>
-                    <div class="surah-details">
-                        <span>${surah.englishName}</span> | <span>${revelationType}</span> | <span>${surah.numberOfAyahs} آيات</span>
-                    </div>
-                `;
-                
-                // إضافة البطاقة إلى الحاوية
-                surahContainer.appendChild(card);
-
-                // إضافة حدث النقر لتتبع الإحصائيات
-                card.addEventListener('click', (e) => {
-                    // لا نمنع الانتقال الافتراضي للرابط، فقط نسجل الحدث
-                    if (typeof gtag === 'function') {
-                        gtag('event', 'view_surah_details', {
-                            'surah_number': surah.number,
-                            'surah_name': surah.englishName
-                        });
-                    }
-                });
-            });
-
+            return data.data;
         } catch (error) {
-            console.error('Error fetching Surahs:', error);
-            surahContainer.innerHTML = '<p style="color: red; text-align: center;">عذرًا، حدث خطأ أثناء تحميل قائمة السور. يرجى التحقق من اتصالك بالإنترنت.</p>';
+            console.error(`Error fetching ${endpoint}:`, error);
+            return null;
         }
     }
 
-    // --- بدء العمليات عند تحميل الصفحة ---
-    displayRandomMessage(); // عرض رسالة عشوائية
-    fetchAndDisplaySurahs(); // جلب وعرض قائمة السور
+    async function populateSurahs() {
+        const meta = await fetchData('meta');
+        if (!meta) return;
+
+        const surahs = meta.surahs.references;
+        surahGrid.innerHTML = '';
+        surahs.forEach(surah => {
+            const col = document.createElement('div');
+            col.className = 'col-md-4 col-lg-3 mb-4';
+            col.innerHTML = `
+                <a href="#" class="card surah-card h-100" data-surah-number="${surah.number}">
+                    <div class="card-body text-center">
+                        <h5 class="card-title arabic-text">${surah.number}. ${surah.name}</h5>
+                        <p class="card-text">${surah.englishName}</p>
+                        <small class="text-muted">${surah.numberOfAyahs} Ayahs</small>
+                    </div>
+                </a>
+            `;
+            surahGrid.appendChild(col);
+        });
+    }
+
+    async function populateSelects() {
+        const [reciters, translations] = await Promise.all([
+            fetchData('edition/type/audio'),
+            fetchData('edition/type/translation')
+        ]);
+
+        if (reciters) {
+            reciters.forEach(reciter => {
+                const option = new Option(reciter.englishName, reciter.identifier);
+                reciterSelect.add(option);
+            });
+            reciterSelect.value = localStorage.getItem('selectedReciter') || 'ar.alafasy';
+        }
+
+        if (translations) {
+            const noTranslationOption = new Option('بدون ترجمة', 'none');
+            translationSelect.add(noTranslationOption);
+            translations.forEach(translation => {
+                const option = new Option(`${translation.englishName} (${translation.language})`, translation.identifier);
+                translationSelect.add(option);
+            });
+            translationSelect.value = localStorage.getItem('selectedTranslation') || 'en.sahih';
+        }
+    }
+
+    function saveSelections() {
+        localStorage.setItem('selectedReciter', reciterSelect.value);
+        localStorage.setItem('selectedTranslation', translationSelect.value);
+    }
+
+    surahGrid.addEventListener('click', (e) => {
+        const card = e.target.closest('.surah-card');
+        if (card) {
+            e.preventDefault();
+            saveSelections();
+            const surahNumber = card.dataset.surahNumber;
+            window.location.href = `surah.html?number=${surahNumber}`;
+        }
+    });
+
+    reciterSelect.addEventListener('change', saveSelections);
+    translationSelect.addEventListener('change', saveSelections);
+
+    async function initializeApp() {
+        showLoading(true);
+        await Promise.all([populateSurahs(), populateSelects()]);
+        showLoading(false);
+    }
+
+    initializeApp();
 });

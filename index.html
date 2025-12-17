@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quran For All Project</title>
-    
-    <!-- Google tag (gtag.js) -->
+    <title>القرآن الكريم - Quran Light Project</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-G2L9W35NKW"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -13,57 +14,42 @@
       gtag('js', new Date());
       gtag('config', 'G-G2L9W35NKW');
     </script>
-
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="container py-4">
+        <header class="text-center mb-4">
+            <h1>القرآن الكريم</h1>
+            <p class="lead">مشروع النور - Quran Light Project</p>
+        </header>
 
-    <header>
-        <h1>مشروع القرآن للجميع</h1>
-        <p class="subtitle">An Open Source Project for Spreading the Light of the Holy Quran</p>
-    </header>
-
-    <main>
-        <section id="message-of-light">
-            <h2>رسالة من نور</h2>
-            <p id="arabic-message"></p>
-            <p id="english-message" class="translation"></p>
-            <small id="message-source"></small>
-        </section>
-
-        <section id="quran-surahs">
-            <h2>سور القرآن الكريم (114 )</h2>
-            <div id="surah-list-container">
-                <div class="loading-spinner"></div>
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-4 mb-2">
+                <label for="reciter-select" class="form-label">اختر القارئ:</label>
+                <select id="reciter-select" class="form-select"></select>
             </div>
-        </section>
-    </main>
-
-    <!-- النافذة المنبثقة لمشغل الصوت -->
-    <div id="audio-player-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <h3 id="modal-surah-name"></h3>
-            <div id="player-container">
-                <label for="reciter-select">اختر القارئ:</label>
-                <select id="reciter-select"></select>
-                <audio id="audio-player" controls>
-                    <source src="" type="audio/mpeg">
-                    متصفحك لا يدعم تشغيل الصوت.
-                </audio>
+            <div class="col-md-4 mb-2">
+                <label for="translation-select" class="form-label">اختر الترجمة:</label>
+                <select id="translation-select" class="form-select"></select>
             </div>
         </div>
+
+        <main>
+            <div id="loading-indicator" class="text-center" style="display: none;">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p>جاري تحميل قائمة السور...</p>
+            </div>
+            <div id="surah-grid" class="row">
+                <!-- Surah grid will be populated by JavaScript -->
+            </div>
+        </main>
+
+        <footer class="text-center text-muted mt-5">
+            <p>تم البناء بالالتزام - معين & مانوس</p>
+        </footer>
     </div>
 
-    <footer>
-        <p class="credit">Designed & Supervised by: Eng. Maeen Ahmed Al-Gumaei</p>
-        <p>Quran-For-All Project - 2025</p>
-    </footer>
-
-    <script src="messages.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

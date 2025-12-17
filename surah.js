@@ -1,87 +1,125 @@
-document.addEventListener('DOMContentLoaded', async () => {
-    const surahTitle = document.getElementById('surah-title');
-    const surahSubtitle = document.getElementById('surah-subtitle');
-    const ayahContainer = document.getElementById('ayah-text-container');
-    const reciterSelect = document.getElementById('reciter-select');
+document.addEventListener('DOMContentLoaded', () => {
+    const surahHeader = document.getElementById('surah-header');
+    const ayahContainer = document.getElementById('ayah-container');
     const audioPlayer = document.getElementById('audio-player');
-    const audioError = document.getElementById('audio-error');
-    const bismillahDisplay = document.getElementById('bismillah-display');
+    const currentAyahInfo = document.getElementById('current-ayah-info');
+    const loadingIndicator = document.getElementById('loading-indicator');
 
-    const reciters = {
-        "Abdulaziz_Al-Zahrani": "عبدالعزيز الزهراني (سحيم)",
-        "Nasser_Al_qatami": "ناصر القطامي",
-        "Mansour_Al-Salmi": "منصور السالمي",
-        "islam_sobhi": "إسلام صبحي",
-        "Yasser_Al-Dosari": "ياسر الدوسري"
-    };
+    const QURAN_API_BASE = 'https://api.alquran.cloud/v1';
 
-    for (const [identifier, name] of Object.entries(reciters)) {
-        const option = document.createElement('option');
-        option.value = identifier;
-        option.textContent = name;
-        reciterSelect.appendChild(option);
+    let currentAyahNumber = 0;
+    let surahData = {};
+
+    function showLoading(show ) {
+        loadingIndicator.style.display = show ? 'block' : 'none';
     }
 
-    const params = new URLSearchParams(window.location.search);
-    const surahNumber = params.get('surah');
-
-    if (!surahNumber) {
-        ayahContainer.innerHTML = '<p>لم يتم تحديد رقم السورة.</p>';
-        return;
+    function getUrlParams() {
+        const params = new URLSearchParams(window.location.search);
+        return {
+            surahNumber: params.get('number'),
+            reciter: localStorage.getItem('selectedReciter') || 'ar.alafasy',
+            translation: localStorage.getItem('selectedTranslation') || 'en.sahih'
+        };
     }
 
-    try {
-        const response = await fetch(`https://api.alquran.cloud/v1/surah/${surahNumber}` );
-        if (!response.ok) throw new Error('Network response was not ok.');
-        
-        const data = await response.json();
-        const surahData = data.data;
+    async function loadSurahData() {
+        showLoading(true);
+        const { surahNumber, reciter, translation } = getUrlParams();
 
-        surahTitle.textContent = `سورة ${surahData.name}`;
-        surahSubtitle.textContent = `${surahData.englishName} - ${surahData.numberOfAyahs} Ayahs`;
-        document.title = `سورة ${surahData.name} - Quran For All`;
-        
-        // عرض البسملة إذا لم تكن سورة التوبة
-        if (surahNumber != 9 && surahNumber != 1) {
-            bismillahDisplay.style.display = 'block';
+        if (!surahNumber) {
+            ayahContainer.innerHTML = '<p class="text-center text-danger">لم يتم تحديد رقم السورة.</p>';
+            showLoading(false);
+            return;
         }
 
-        let fullSurahText = '';
-        surahData.ayahs.forEach(ayah => {
-            fullSurahText += `${ayah.text} <span class="ayah-marker">﴿${ayah.numberInSurah}﴾</span> `;
+        const editions = `quran-uthmani,${reciter}${translation !== 'none' ? ',' + translation : ''}`;
+        
+        try {
+            const response = await fetch(`${QURAN_API_BASE}/surah/${surahNumber}/editions/${editions}`);
+            const data = await response.json();
+            
+            surahData.arabic = data.data[0];
+            surahData.audio = data.data[1];
+            surahData.translation = (translation !== 'none') ? data.data[2] : null;
+
+            renderSurah();
+            gtag('event', 'view_surah', { 'surah_number': surahNumber });
+
+        } catch (error) {
+            console.error('Error loading surah:', error);
+            ayahContainer.innerHTML = '<p class="text-center text-danger">حدث خطأ أثناء تحميل بيانات السورة.</p>';
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    function renderSurah() {
+        const { arabic, translation } = surahData;
+        
+        surahHeader.innerHTML = `
+            <h1 class="arabic-text">${arabic.name}</h1>
+            <p class="lead">${arabic.englishName} - ${arabic.englishNameTranslation}</p>
+            <a href="index.html" class="btn btn-outline-primary">العودة إلى الفهرس</a>
+        `;
+        document.title = arabic.name;
+
+        ayahContainer.innerHTML = '';
+        arabic.ayahs.forEach(ayah => {
+            const ayahBlock = document.createElement('div');
+            ayahBlock.className = 'ayah-block';
+            ayahBlock.id = `ayah-${ayah.numberInSurah}`;
+
+            const translationText = translation ? `<p class="translation-text">${translation.ayahs.find(t => t.numberInSurah === ayah.numberInSurah).text}</p>` : '';
+
+            ayahBlock.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="ayah-number">﴿${ayah.numberInSurah}﴾</span>
+                    <span class="play-button" data-ayah="${ayah.numberInSurah}">&#9654;</span>
+                </div>
+                <p class="ayah-text arabic-text">${ayah.text}</p>
+                ${translationText}
+            `;
+            ayahContainer.appendChild(ayahBlock);
         });
-        
-        ayahContainer.innerHTML = fullSurahText;
-
-        updateAudioPlayer();
-
-    } catch (error) {
-        console.error('Error fetching surah details:', error);
-        ayahContainer.innerHTML = '<p class="error-message">فشل تحميل بيانات السورة. يرجى التحقق من اتصالك بالإنترنت.</p>';
     }
 
-    function updateAudioPlayer() {
-        const reciterIdentifier = reciterSelect.value;
-        const paddedSurahNumber = surahNumber.padStart(3, '0');
-        const audioUrl = `https://server11.mp3quran.net/${reciterIdentifier}/${paddedSurahNumber}.mp3`;
+    function playAyah(ayahNumber) {
+        currentAyahNumber = parseInt(ayahNumber);
+        const audioAyah = surahData.audio.ayahs.find(a => a.numberInSurah === currentAyahNumber);
         
-        audioPlayer.src = audioUrl;
-        audioError.style.display = 'none'; // إخفاء رسالة الخطأ عند محاولة جديدة
-        console.log(`Attempting to load audio: ${audioUrl}` );
-
-        if (typeof gtag === 'function') {
-            gtag('event', 'listen_to_surah', {
-                'surah_number': surahNumber,
-                'reciter_name': reciters[reciterIdentifier]
-            });
+        if (audioAyah && audioAyah.audio) {
+            audioPlayer.src = audioAyah.audio;
+            audioPlayer.play();
+            updateHighlight();
+            currentAyahInfo.textContent = `${surahData.arabic.englishName} - Ayah ${currentAyahNumber}`;
+            gtag('event', 'play_audio', { 'surah_number': surahData.arabic.number, 'ayah_number': currentAyahNumber });
         }
     }
 
-    reciterSelect.addEventListener('change', updateAudioPlayer);
+    function updateHighlight() {
+        document.querySelectorAll('.ayah-block').forEach(block => block.classList.remove('ayah-highlight'));
+        const currentBlock = document.getElementById(`ayah-${currentAyahNumber}`);
+        if (currentBlock) {
+            currentBlock.classList.add('ayah-highlight');
+            currentBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
 
-    // معالجة خطأ تحميل الصوت
-    audioPlayer.addEventListener('error', () => {
-        console.error("Failed to load audio file.");
-        audioError.style.display = 'block';
+    ayahContainer.addEventListener('click', (e) => {
+        if (e.target.classList.contains('play-button')) {
+            const ayahNumber = e.target.dataset.ayah;
+            playAyah(ayahNumber);
+        }
     });
+
+    audioPlayer.addEventListener('ended', () => {
+        if (currentAyahNumber < surahData.arabic.ayahs.length) {
+            playAyah(currentAyahNumber + 1);
+        } else {
+            currentAyahInfo.textContent = "انتهت السورة";
+        }
+    });
+
+    loadSurahData();
 });
