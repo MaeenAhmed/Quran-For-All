@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const params = new URLSearchParams(window.location.search);
         return {
             surahNumber: params.get('number'),
+            // FIX: Use the values stored in localStorage from the main page
             reciter: localStorage.getItem('selectedReciter') || 'ar.alafasy',
             translation: localStorage.getItem('selectedTranslation') || 'en.sahih'
         };
@@ -33,22 +34,30 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // FIX: The editions string is now correctly built based on user's choice
         const editions = `quran-uthmani,${reciter}${translation !== 'none' ? ',' + translation : ''}`;
         
         try {
             const response = await fetch(`${QURAN_API_BASE}/surah/${surahNumber}/editions/${editions}`);
+            if (!response.ok) {
+                 throw new Error(`API Error: ${response.status}`);
+            }
             const data = await response.json();
             
-            surahData.arabic = data.data[0];
-            surahData.audio = data.data[1];
-            surahData.translation = (translation !== 'none') ? data.data[2] : null;
+            if (data.code !== 200) {
+                throw new Error(`API returned non-200 code: ${data.message}`);
+            }
+
+            surahData.arabic = data.data.find(e => e.edition.identifier === 'quran-uthmani');
+            surahData.audio = data.data.find(e => e.edition.type === 'audio');
+            surahData.translation = data.data.find(e => e.edition.type === 'translation');
 
             renderSurah();
-            gtag('event', 'view_surah', { 'surah_number': surahNumber });
+            gtag('event', 'view_surah', { 'surah_number': surahNumber, 'reciter': reciter });
 
         } catch (error) {
             console.error('Error loading surah:', error);
-            ayahContainer.innerHTML = '<p class="text-center text-danger">حدث خطأ أثناء تحميل بيانات السورة.</p>';
+            ayahContainer.innerHTML = `<p class="text-center text-danger">حدث خطأ أثناء تحميل بيانات السورة. تأكد من اختيارك لقارئ صالح.</p><p class="text-center text-muted">${error.message}</p>`;
         } finally {
             showLoading(false);
         }
