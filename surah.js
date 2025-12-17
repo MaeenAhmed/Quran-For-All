@@ -9,12 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const QURAN_API_BASE = 'https://api.alquran.cloud/v1';
     const DEFAULT_RECITER = 'ar.alafasy';
 
+    // Expert Fix #1: Initialize surahData as an array, not an object.
+    let surahData = [];
     let currentAyahNumber = 0;
-    let surahData = {
-        arabic: null,
-        audio: null,
-        translation: null,
-    };
 
     function showLoading(show ) {
         loadingIndicator.style.display = show ? 'block' : 'none';
@@ -46,44 +43,38 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const endpoints = [
-            `${QURAN_API_BASE}/surah/${surahNumber}/quran-uthmani`, // Arabic Text
-            `${QURAN_API_BASE}/surah/${surahNumber}/${reciter}`, // Selected Audio
-        ];
+        const editions = ['quran-uthmani', reciter];
         if (translation !== 'none') {
-            endpoints.push(`${QURAN_API_BASE}/surah/${surahNumber}/${translation}`); // Translation
+            editions.push(translation);
         }
 
         try {
-            const results = await Promise.allSettled(endpoints.map(url => fetch(url, { cache: 'no-cache' }).then(res => res.json())));
+            const results = await Promise.allSettled(
+                editions.map(edition =>
+                    fetch(`${QURAN_API_BASE}/surah/${surahNumber}/${edition}`, { cache: 'no-cache' }).then(res => res.json())
+                )
+            );
 
-            const [arabicResult, audioResult, translationResult] = results;
+            const fulfilledResults = results
+                .filter(result => result.status === 'fulfilled' && result.value.code === 200)
+                .map(result => result.value.data);
 
-            // Arabic text is essential
-            if (arabicResult.status === 'fulfilled' && arabicResult.value.code === 200) {
-                surahData.arabic = arabicResult.value.data;
-            } else {
+            surahData = fulfilledResults; // Assign the array of results
+
+            const arabicData = surahData.find(d => d.edition.identifier === 'quran-uthmani');
+            if (!arabicData) {
                 throw new Error('Critical: Could not load Arabic text.');
             }
 
-            // Audio is important, with fallback
-            if (audioResult.status === 'fulfilled' && audioResult.value.code === 200) {
-                surahData.audio = audioResult.value.data;
-            } else {
-                addNotice('تعذر تحميل القارئ المختار. سنحاول التبديل إلى القارئ الافتراضي.', 'warning');
-                const fallbackAudioResponse = await fetch(`${QURAN_API_BASE}/surah/${surahNumber}/${DEFAULT_RECITER}`, { cache: 'no-cache' }).then(res => res.json());
-                if (fallbackAudioResponse.code === 200) {
-                    surahData.audio = fallbackAudioResponse.data;
+            let audioData = surahData.find(d => d.edition.identifier === reciter);
+            if (!audioData) {
+                addNotice('تعذر تحميل القارئ المختار. جاري التبديل إلى القارئ الافتراضي.', 'warning');
+                const fallbackResponse = await fetch(`${QURAN_API_BASE}/surah/${surahNumber}/${DEFAULT_RECITER}`, { cache: 'no-cache' }).then(res => res.json());
+                if (fallbackResponse.code === 200) {
+                    surahData.push(fallbackResponse.data); // Add fallback data to the array
                 } else {
                     addNotice('فشل تحميل الصوت تمامًا. ستكون القراءة غير متاحة.', 'danger');
                 }
-            }
-
-            // Translation is optional
-            if (translationResult && translationResult.status === 'fulfilled' && translationResult.value.code === 200) {
-                surahData.translation = translationResult.value.data;
-            } else if (translationResult) {
-                addNotice('تعذر تحميل الترجمة.', 'info');
             }
 
             renderSurah();
@@ -98,23 +89,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderSurah() {
-        const { arabic, translation, audio } = surahData;
-        
+        const arabicData = surahData.find(d => d.edition.identifier === 'quran-uthmani');
+        const translationData = surahData.find(d => d.edition.type === 'translation');
+        const audioData = surahData.find(d => d.edition.type === 'audio');
+
         surahHeader.innerHTML = `
-            <h1 class="arabic-text">${arabic.name}</h1>
-            <p class="lead">${arabic.englishName} - ${arabic.englishNameTranslation}</p>
+            <h1 class="arabic-text">${arabicData.name}</h1>
+            <p class="lead">${arabicData.englishName} - ${arabicData.englishNameTranslation}</p>
             <a href="index.html" class="btn btn-outline-primary">العودة إلى الفهرس</a>
         `;
-        document.title = arabic.name;
+        document.title = arabicData.name;
 
         ayahContainer.innerHTML = '';
-        arabic.ayahs.forEach(ayah => {
+        arabicData.ayahs.forEach(ayah => {
             const ayahBlock = document.createElement('div');
             ayahBlock.className = 'ayah-block';
             ayahBlock.id = `ayah-${ayah.numberInSurah}`;
 
-            const translationText = translation ? `<p class="translation-text">${translation.ayahs.find(t => t.numberInSurah === ayah.numberInSurah).text}</p>` : '';
-            const playButton = audio ? `<span class="play-button" data-ayah="${ayah.numberInSurah}">&#9654;</span>` : '';
+            const translationText = translationData ? `<p class="translation-text">${translationData.ayahs.find(t => t.numberInSurah === ayah.numberInSurah).text}</p>` : '';
+            const playButton = audioData ? `<span class="play-button" data-ayah="${ayah.numberInSurah}">&#9654;</span>` : '';
 
             ayahBlock.innerHTML = `
                 <div class="d-flex justify-content-between align-items-center">
@@ -129,16 +122,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function playAyah(ayahNumber) {
-        if (!surahData.audio) return;
+        const audioData = surahData.find(d => d.edition.type === 'audio');
+        if (!audioData) return;
+
+        // Expert Fix #2: Correctly define currentAyahNumber here.
         currentAyahNumber = parseInt(ayahNumber);
-        const audioAyah = surahData.audio.ayahs.find(a => a.numberInSurah === currentAyahNumber);
+        const audioAyah = audioData.ayahs.find(a => a.numberInSurah === currentAyahNumber);
         
         if (audioAyah && audioAyah.audio) {
             audioPlayer.src = audioAyah.audio;
             audioPlayer.play();
             updateHighlight();
-            currentAyahInfo.textContent = `${surahData.arabic.englishName} - Ayah ${currentAyahNumber}`;
-            gtag('event', 'play_audio', { 'surah_number': surahData.arabic.number, 'ayah_number': currentAyahNumber });
+            const arabicData = surahData.find(d => d.edition.identifier === 'quran-uthmani');
+            currentAyahInfo.textContent = `${arabicData.englishName} - Ayah ${currentAyahNumber}`;
+            gtag('event', 'play_audio', { 'surah_number': arabicData.number, 'ayah_number': currentAyahNumber });
         }
     }
 
@@ -151,6 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Expert Fix #3: Add the missing event listener.
     ayahContainer.addEventListener('click', (e) => {
         if (e.target.classList.contains('play-button')) {
             playAyah(e.target.dataset.ayah);
@@ -158,7 +156,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     audioPlayer.addEventListener('ended', () => {
-        if (surahData.audio && currentAyahNumber < surahData.arabic.ayahs.length) {
+        const arabicData = surahData.find(d => d.edition.identifier === 'quran-uthmani');
+        if (arabicData && currentAyahNumber < arabicData.ayahs.length) {
             playAyah(currentAyahNumber + 1);
         } else {
             currentAyahInfo.textContent = "انتهت السورة";
