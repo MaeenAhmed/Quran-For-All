@@ -18,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const params = new URLSearchParams(window.location.search);
         return {
             surahNumber: params.get('number'),
-            // FIX: Use the values stored in localStorage from the main page
             reciter: localStorage.getItem('selectedReciter') || 'ar.alafasy',
             translation: localStorage.getItem('selectedTranslation') || 'en.sahih'
         };
@@ -34,30 +33,28 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // FIX: The editions string is now correctly built based on user's choice
         const editions = `quran-uthmani,${reciter}${translation !== 'none' ? ',' + translation : ''}`;
         
         try {
             const response = await fetch(`${QURAN_API_BASE}/surah/${surahNumber}/editions/${editions}`);
-            if (!response.ok) {
-                 throw new Error(`API Error: ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`API Error: ${response.status}`);
             const data = await response.json();
-            
-            if (data.code !== 200) {
-                throw new Error(`API returned non-200 code: ${data.message}`);
-            }
+            if (data.code !== 200) throw new Error(`API returned non-200 code: ${data.message}`);
 
             surahData.arabic = data.data.find(e => e.edition.identifier === 'quran-uthmani');
             surahData.audio = data.data.find(e => e.edition.type === 'audio');
             surahData.translation = data.data.find(e => e.edition.type === 'translation');
+
+            if (!surahData.arabic || !surahData.audio) {
+                throw new Error("Could not find essential Arabic text or audio edition in the API response.");
+            }
 
             renderSurah();
             gtag('event', 'view_surah', { 'surah_number': surahNumber, 'reciter': reciter });
 
         } catch (error) {
             console.error('Error loading surah:', error);
-            ayahContainer.innerHTML = `<p class="text-center text-danger">حدث خطأ أثناء تحميل بيانات السورة. تأكد من اختيارك لقارئ صالح.</p><p class="text-center text-muted">${error.message}</p>`;
+            ayahContainer.innerHTML = `<p class="text-center text-danger">حدث خطأ أثناء تحميل بيانات السورة. تأكد من اختيارك لقارئ صالح وأن اتصالك بالإنترنت يعمل.</p><p class="text-center text-muted" style="font-size:0.8rem; direction:ltr;">${error.message}</p>`;
         } finally {
             showLoading(false);
         }

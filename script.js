@@ -3,17 +3,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const surahGrid = document.getElementById('surah-grid');
     const reciterSelect = document.getElementById('reciter-select');
     const translationSelect = document.getElementById('translation-select');
-    const loadingIndicator = document.getElementById('loading-indicator');
-    const noorModalElement = document.getElementById('noorModal');
-    const noorMessageText = document.getElementById('noorMessageText');
-    const noorMessageTranslation = document.getElementById('noorMessageTranslation');
-    const noorMessageSource = document.getElementById('noorMessageSource');
+    const timeMakkah = document.getElementById('time-makkah');
+    const timePalestine = document.getElementById('time-palestine');
+    const timeWashington = document.getElementById('time-washington');
 
     // --- Constants ---
     const QURAN_API_BASE = 'https://api.alquran.cloud/v1';
-    const MODAL_COOLDOWN_HOURS = 3;
-
-    // V2.0 ARCHITECTURE: Static Surah list for 100% reliability and instant load.
     const STATIC_SURAHS = [
         {number: 1, name: "سُورَةُ ٱلْفَاتِحَةِ", englishName: "Al-Faatiha", numberOfAyahs: 7}, {number: 2, name: "سُورَةُ ٱلْبَقَرَةِ", englishName: "Al-Baqara", numberOfAyahs: 286},
         {number: 3, name: "سُورَةُ آلِ عِمْرَانَ", englishName: "Aal-i-Imraan", numberOfAyahs: 200}, {number: 4, name: "سُورَةُ ٱلنِّسَاءِ", englishName: "An-Nisaa", numberOfAyahs: 176},
@@ -74,16 +69,17 @@ document.addEventListener('DOMContentLoaded', () => {
         {number: 113, name: "سُورَةُ ٱلْفَلَقِ", englishName: "Al-Falaq", numberOfAyahs: 5}, {number: 114, name: "سُورَةُ ٱلنَّاسِ", englishName: "An-Naas", numberOfAyahs: 6}
     ];
 
-    const NOOR_MESSAGES = [
-        { arabic: "وَمَا أَرْسَلْنَاكَ إِلَّا رَحْمَةً لِّلْعَالَمِينَ", english: "And We have not sent you, [O Muhammad], except as a mercy to the worlds.", source: "سورة الأنبياء، 107" },
-        { arabic: "وَقُولُوا لِلنَّاسِ حُسْنًا", english: "And speak to people good [words].", source: "سورة البقرة، 83" },
-        { arabic: "إِنَّ اللَّهَ يَأْمُرُ بِالْعَدْلِ وَالْإِحْسَانِ", english: "Indeed, Allah commands justice and good conduct.", source: "سورة النحل، 90" }
-    ];
-
     // --- Functions ---
-    function populateSurahs( ) {
-        loadingIndicator.style.display = 'none'; // Hide loading indicator immediately
-        surahGrid.innerHTML = ''; // Clear any previous error messages
+
+    function updateClocks( ) {
+        const now = new Date();
+        timeMakkah.textContent = now.toLocaleTimeString('en-US', { timeZone: 'Asia/Riyadh', hour12: false });
+        timePalestine.textContent = now.toLocaleTimeString('en-US', { timeZone: 'Asia/Gaza', hour12: false });
+        timeWashington.textContent = now.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour12: false });
+    }
+
+    function populateSurahs() {
+        surahGrid.innerHTML = '';
         STATIC_SURAHS.forEach(surah => {
             const col = document.createElement('div');
             col.className = 'col-md-4 col-lg-3 mb-4';
@@ -95,53 +91,42 @@ document.addEventListener('DOMContentLoaded', () => {
     async function fetchData(endpoint) {
         try {
             const response = await fetch(`${QURAN_API_BASE}/${endpoint}`);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            if (!response.ok) throw new Error(`API Error: ${response.status}`);
             const data = await response.json();
             return data.data;
         } catch (error) {
-            console.error(`Error fetching ${endpoint}:`, error);
-            return null; // Return null on failure, don't block the UI
+            console.error(`Failed to fetch ${endpoint}:`, error);
+            return null; // Return null on error
         }
     }
 
     async function populateSelects() {
-        // These are non-critical, they can load in the background
         const [reciters, translations] = await Promise.all([
             fetchData('edition/type/audio'),
             fetchData('edition/type/translation')
         ]);
+
+        reciterSelect.innerHTML = ''; // Clear "Loading..."
         if (reciters) {
             reciters.forEach(reciter => reciterSelect.add(new Option(reciter.englishName, reciter.identifier)));
             reciterSelect.value = localStorage.getItem('selectedReciter') || 'ar.alafasy';
+        } else {
+            reciterSelect.add(new Option('فشل تحميل القراء', ''));
         }
+
+        translationSelect.innerHTML = ''; // Clear "Loading..."
+        translationSelect.add(new Option('بدون ترجمة', 'none'));
         if (translations) {
-            translationSelect.add(new Option('بدون ترجمة', 'none'));
             translations.forEach(translation => translationSelect.add(new Option(`${translation.englishName} (${translation.language})`, translation.identifier)));
             translationSelect.value = localStorage.getItem('selectedTranslation') || 'en.sahih';
+        } else {
+            translationSelect.add(new Option('فشل تحميل التراجم', ''));
         }
     }
 
     function saveSelections() {
         localStorage.setItem('selectedReciter', reciterSelect.value);
         localStorage.setItem('selectedTranslation', translationSelect.value);
-    }
-
-    function showNoorMessage() {
-        const lastShown = localStorage.getItem('noorModalLastShown');
-        const now = new Date().getTime();
-        if (lastShown && (now - lastShown < MODAL_COOLDOWN_HOURS * 60 * 60 * 1000)) return;
-
-        const randomMessage = NOOR_MESSAGES[Math.floor(Math.random() * NOOR_MESSAGES.length)];
-        
-        noorMessageText.textContent = randomMessage.arabic;
-        noorMessageTranslation.textContent = randomMessage.english;
-        noorMessageSource.textContent = randomMessage.source;
-
-        const modal = new bootstrap.Modal(noorModalElement);
-        setTimeout(() => {
-            modal.show();
-            localStorage.setItem('noorModalLastShown', now);
-        }, 2500);
     }
 
     // --- Event Listeners ---
@@ -158,9 +143,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- App Initialization ---
     function initializeApp() {
-        populateSurahs();   // INSTANTLY load surahs from static list
-        populateSelects();  // Load non-critical dropdowns in the background
-        showNoorMessage();  // Show inspirational message
+        updateClocks();
+        setInterval(updateClocks, 1000); // Update clocks every second
+
+        populateSurahs();   // INSTANTLY load surahs
+        populateSelects();  // Load dropdowns in the background
     }
 
     initializeApp();
