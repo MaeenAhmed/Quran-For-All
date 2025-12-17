@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Constants ---
     const QURAN_API_BASE = 'https://api.alquran.cloud/v1';
 
-    // v9.0 GOLDEN MASTER: Using the final, verified, expert-provided list of reciters.
+    // v9.1 - The stable code of v8.0 with the CORRECTLY FORMATTED list of reciters.
     const STATIC_SURAHS = [
         {number: 1, name: "سُورَةُ ٱلْفَاتِحَةِ", englishName: "Al-Faatiha", numberOfAyahs: 7}, {number: 2, name: "سُورَةُ ٱلْبَقَرَةِ", englishName: "Al-Baqara", numberOfAyahs: 286},
         {number: 3, name: "سُورَةُ آلِ عِمْرَانَ", englishName: "Aal-i-Imraan", numberOfAyahs: 200}, {number: 4, name: "سُورَةُ ٱلنِّسَاءِ", englishName: "An-Nisaa", numberOfAyahs: 176},
@@ -71,19 +71,19 @@ document.addEventListener('DOMContentLoaded', () => {
         {number: 113, name: "سُورَةُ ٱلْفَلَقِ", englishName: "Al-Falaq", numberOfAyahs: 5}, {number: 114, name: "سُورَةُ ٱلنَّاسِ", englishName: "An-Naas", numberOfAyahs: 6}
     ];
     const STATIC_RECITERS = [
-        { "name": "Abdul Basit (Mujawwad )", "identifier": "ar.abdulsamad" },
-        { "name": "Abdul Basit (Murattal)", "identifier": "ar.abdulbasitmurattal" },
-        { "name": "Abdurrahmaan As-Sudais", "identifier": "ar.sudais" },
-        { "name": "Abu Bakr Ash-Shaatree", "identifier": "ar.shaatree" },
-        { "name": "Ahmed ibn Ali al-Ajamy", "identifier": "ar.ajmy" },
-        { "name": "Mishary Rashid Alafasy", "identifier": "ar.alafasy" },
-        { "name": "Hani Ar-Rifai", "identifier": "ar.hanirifai" },
-        { "name": "Mahmoud Khalil Al-Husary", "identifier": "ar.husary" },
-        { "name": "Al-Husary (Mujawwad)", "identifier": "ar.husarymujawwad" },
-        { "name": "Saad Al Ghamdi", "identifier": "ar.ghamdi" },
-        { "name": "Saud Al-Shuraim", "identifier": "ar.shuraim" },
-        { "name": "English - Ibrahim Walk", "identifier": "en.walk" },
-        { "name": "Urdu - Farhat Hashmi", "identifier": "ur.farhathashmi" }
+        { name: 'Abdul Basit (Mujawwad )', identifier: 'ar.abdulsamad' },
+        { name: 'Abdul Basit (Murattal)', identifier: 'ar.abdulbasitmurattal' },
+        { name: 'Abdurrahmaan As-Sudais', identifier: 'ar.sudais' },
+        { name: 'Abu Bakr Ash-Shaatree', identifier: 'ar.shaatree' },
+        { name: 'Ahmed ibn Ali al-Ajamy', identifier: 'ar.ajmy' },
+        { name: 'Mishary Rashid Alafasy', identifier: 'ar.alafasy' },
+        { name: 'Hani Ar-Rifai', identifier: 'ar.hanirifai' },
+        { name: 'Mahmoud Khalil Al-Husary', identifier: 'ar.husary' },
+        { name: 'Al-Husary (Mujawwad)', identifier: 'ar.husarymujawwad' },
+        { name: 'Saad Al Ghamdi', identifier: 'ar.ghamdi' },
+        { name: 'Saud Al-Shuraim', identifier: 'ar.shuraim' },
+        { name: 'English - Ibrahim Walk', identifier: 'en.walk' },
+        { name: 'Urdu - Farhat Hashmi', identifier: 'ur.farhathashmi' }
     ];
 
     // --- Functions ---
@@ -167,6 +167,8 @@ document.addEventListener('DOMContentLoaded', () => {
         populateReciters();
         populateTranslations();
     }
+
+
 
     initializeApp();
 });
