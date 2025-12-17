@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Constants ---
     const QURAN_API_BASE = 'https://api.alquran.cloud/v1';
 
-    // v5.0 ARCHITECTURE: Corrected static lists for 100% reliability.
+    // v6.0 ARCHITECTURE: Verified static lists.
     const STATIC_SURAHS = [
         {number: 1, name: "سُورَةُ ٱلْفَاتِحَةِ", englishName: "Al-Faatiha", numberOfAyahs: 7}, {number: 2, name: "سُورَةُ ٱلْبَقَرَةِ", englishName: "Al-Baqara", numberOfAyahs: 286},
         {number: 3, name: "سُورَةُ آلِ عِمْرَانَ", englishName: "Aal-i-Imraan", numberOfAyahs: 200}, {number: 4, name: "سُورَةُ ٱلنِّسَاءِ", englishName: "An-Nisaa", numberOfAyahs: 176},
@@ -70,14 +70,13 @@ document.addEventListener('DOMContentLoaded', () => {
         {number: 111, name: "سُورَةُ ٱلْمَسَدِ", englishName: "Al-Masad", numberOfAyahs: 5}, {number: 112, name: "سُورَةُ ٱلْإِخْلَاصِ", englishName: "Al-Ikhlaas", numberOfAyahs: 4},
         {number: 113, name: "سُورَةُ ٱلْفَلَقِ", englishName: "Al-Falaq", numberOfAyahs: 5}, {number: 114, name: "سُورَةُ ٱلنَّاسِ", englishName: "An-Naas", numberOfAyahs: 6}
     ];
-    // CORRECTED Reciter identifiers
     const STATIC_RECITERS = [
         { name: "Mishary Rashid Alafasy", identifier: "ar.alafasy" },
-        { name: "Saad Al Ghamdi", identifier: "ar.ghamdi" }, // Corrected
+        { name: "Saad Al Ghamdi", identifier: "ar.ghamdi" },
         { name: "Mahmoud Khalil Al-Husary", identifier: "ar.husary" },
         { name: "Abdul Basit Abdul Samad (Murattal )", identifier: "ar.abdulbasitmurattal" },
-        { name: "Saud Al-Shuraim", identifier: "ar.shuraim" }, // Corrected
-        { name: "Ahmed ibn Ali al-Ajamy", identifier: "ar.ajmy" }, // Corrected
+        { name: "Saud Al-Shuraim", identifier: "ar.shuraim" },
+        { name: "Ahmed ibn Ali al-Ajamy", identifier: "ar.ajmy" },
         { name: "English - Ibrahim Walk", identifier: "en.walk" }
     ];
 

@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingIndicator = document.getElementById('loading-indicator');
 
     const QURAN_API_BASE = 'https://api.alquran.cloud/v1';
+    const DEFAULT_RECITER = 'ar.alafasy'; // Guaranteed to work
 
     let currentAyahNumber = 0;
     let surahData = {};
@@ -18,14 +19,38 @@ document.addEventListener('DOMContentLoaded', () => {
         const params = new URLSearchParams(window.location.search);
         return {
             surahNumber: params.get('number'),
-            reciter: localStorage.getItem('selectedReciter') || 'ar.alafasy',
+            reciter: localStorage.getItem('selectedReciter') || DEFAULT_RECITER,
             translation: localStorage.getItem('selectedTranslation') || 'en.sahih'
         };
     }
 
+    // v6.0 - Robust data fetching function
+    async function fetchSurahEditions(surahNumber, reciter, translation) {
+        const editions = `quran-uthmani,${reciter}${translation !== 'none' ? ',' + translation : ''}`;
+        const url = `${QURAN_API_BASE}/surah/${surahNumber}/editions/${editions}`;
+        
+        // Using "no-cache" to prevent the browser from serving stale/failed responses
+        const response = await fetch(url, { cache: "no-cache" }); 
+        if (!response.ok) throw new Error(`API Error: ${response.status}`);
+        
+        const data = await response.json();
+        if (data.code !== 200) throw new Error(`API returned non-200 code: ${data.message}`);
+
+        const arabic = data.data.find(e => e.edition.identifier === 'quran-uthmani');
+        const audio = data.data.find(e => e.edition.type === 'audio');
+        
+        // If audio is missing for the selected reciter, it's a failure
+        if (!arabic || !audio) {
+            return null; // Indicate failure
+        }
+        
+        return data.data; // Success
+    }
+
+    // v6.0 - Main function with SAFE MODE logic
     async function loadSurahData() {
         showLoading(true);
-        const { surahNumber, reciter, translation } = getUrlParams();
+        let { surahNumber, reciter, translation } = getUrlParams();
 
         if (!surahNumber) {
             ayahContainer.innerHTML = '<p class="text-center text-danger">لم يتم تحديد رقم السورة.</p>';
@@ -33,28 +58,38 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const editions = `quran-uthmani,${reciter}${translation !== 'none' ? ',' + translation : ''}`;
-        
         try {
-            const response = await fetch(`${QURAN_API_BASE}/surah/${surahNumber}/editions/${editions}`);
-            if (!response.ok) throw new Error(`API Error: ${response.status}`);
-            const data = await response.json();
-            if (data.code !== 200) throw new Error(`API returned non-200 code: ${data.message}`);
+            let editionsData = await fetchSurahEditions(surahNumber, reciter, translation);
 
-            surahData.arabic = data.data.find(e => e.edition.identifier === 'quran-uthmani');
-            surahData.audio = data.data.find(e => e.edition.type === 'audio');
-            surahData.translation = data.data.find(e => e.edition.type === 'translation');
-
-            if (!surahData.arabic || !surahData.audio) {
-                throw new Error("Could not find essential Arabic text or audio edition in the API response. The selected reciter might be invalid.");
+            // SAFE MODE: If the chosen reciter fails, fall back to the default
+            if (!editionsData) {
+                console.warn(`Failed to load reciter '${reciter}'. Falling back to default.`);
+                const fallbackReciter = DEFAULT_RECITER;
+                editionsData = await fetchSurahEditions(surahNumber, fallbackReciter, translation);
+                
+                // Show a non-intrusive notification to the user
+                const fallbackNotice = document.createElement('div');
+                fallbackNotice.className = 'alert alert-warning text-center';
+                fallbackNotice.textContent = 'تعذر تحميل القارئ المختار. تم التبديل إلى القارئ الافتراضي.';
+                // Using .before() to place it before the header, making it more visible
+                document.querySelector('main').prepend(fallbackNotice);
             }
+
+            if (!editionsData) {
+                // If even the fallback fails, then it's a critical error
+                throw new Error("Critical Error: Could not load even the default reciter. The API might be down.");
+            }
+
+            surahData.arabic = editionsData.find(e => e.edition.identifier === 'quran-uthmani');
+            surahData.audio = editionsData.find(e => e.edition.type === 'audio');
+            surahData.translation = editionsData.find(e => e.edition.type === 'translation');
 
             renderSurah();
             gtag('event', 'view_surah', { 'surah_number': surahNumber, 'reciter': reciter });
 
         } catch (error) {
-            console.error('Error loading surah:', error);
-            ayahContainer.innerHTML = `<p class="text-center text-danger">حدث خطأ أثناء تحميل بيانات السورة. تأكد من اختيارك لقارئ صالح وأن اتصالك بالإنترنت يعمل.</p><p class="text-center text-muted" style="font-size:0.8rem; direction:ltr;">${error.message}</p>`;
+            console.error('Critical error in loadSurahData:', error);
+            ayahContainer.innerHTML = `<p class="text-center text-danger">حدث خطأ حرج أثناء تحميل بيانات السورة. قد تكون خدمة API متوقفة.</p><p class="text-center text-muted" style="font-size:0.8rem; direction:ltr;">${error.message}</p>`;
         } finally {
             showLoading(false);
         }
