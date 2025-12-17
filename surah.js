@@ -1,11 +1,10 @@
-document.addEventListener('DOMContentLoaded', ( ) => {
+document.addEventListener('DOMContentLoaded', () => {
     const surahHeader = document.getElementById('surah-header');
     const ayahContainer = document.getElementById('ayah-container');
     const audioPlayer = document.getElementById('audio-player');
     const currentAyahInfo = document.getElementById('current-ayah-info');
     const loadingIndicator = document.getElementById('loading-indicator');
 
-    // THE ONLY CHANGE IS HERE: http -> https
     const QURAN_API_BASE = 'https://api.alquran.cloud/v1';
 
     let currentAyahNumber = 0;

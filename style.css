@@ -1,71 +1,145 @@
-@import url('https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Roboto&display=swap' );
+/* --- Global Variables and Styles --- */
+:root {
+    --primary-color: #2a9d8f;
+    --secondary-color: #e9c46a;
+    --background-color: #f8f9fa;
+    --text-color: #343a40;
+    --arabic-font: 'Amiri Quran', serif;
+    --english-font: 'Roboto', sans-serif;
+}
 
 body {
-    font-family: 'Roboto', sans-serif;
-    background-color: #f8f9fa;
+    font-family: var(--english-font);
+    background-color: var(--background-color);
+    color: var(--text-color);
 }
 
-.arabic-text, h1, .lead {
-    font-family: 'Amiri Quran', 'Noto Naskh Arabic', serif;
+.arabic-text {
+    font-family: var(--arabic-font);
+    font-size: 1.5rem;
+    line-height: 2.5rem;
 }
 
-#surah-grid .surah-card {
+/* --- Header --- */
+header h1, header p {
+    color: var(--primary-color);
+}
+
+/* --- Surah Cards (index.html) --- */
+.surah-card {
     text-decoration: none;
-    color: #212529;
-    transition: transform 0.2s, box-shadow 0.2s;
+    color: var(--text-color);
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
-#surah-grid .surah-card:hover {
+.surah-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary-color);
 }
 
-#ayah-container .ayah-block {
-    border-bottom: 1px solid #e0e0e0;
-    padding: 1.5rem 0;
+.surah-card .card-title {
+    color: var(--primary-color);
 }
 
-#ayah-container .ayah-block:last-child {
-    border-bottom: none;
+/* --- Surah View (surah.html) --- */
+#surah-header {
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.ayah-block {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border-right: 5px solid transparent;
+    transition: border-color 0.3s;
 }
 
 .ayah-text {
-    font-size: 1.8rem;
-    line-height: 2.5;
-    text-align: right;
+    text-align: justify;
+    margin-bottom: 1rem;
 }
 
 .translation-text {
-    font-size: 1rem;
-    color: #555;
+    font-size: 0.95rem;
+    color: #6c757d;
+    border-top: 1px dashed #e0e0e0;
+    padding-top: 1rem;
+    margin-top: 1rem;
     text-align: left;
     direction: ltr;
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px dashed #ccc;
 }
 
 .ayah-number {
+    font-family: var(--arabic-font);
+    color: var(--primary-color);
     font-size: 1.2rem;
-    color: #0d6efd;
     font-weight: bold;
 }
 
 .play-button {
     cursor: pointer;
-    color: #0d6efd;
+    color: var(--primary-color);
     font-size: 1.5rem;
+    transition: color 0.2s;
+}
+
+.play-button:hover {
+    color: var(--secondary-color);
 }
 
 .ayah-highlight {
-    background-color: rgba(255, 255, 0, 0.4);
-    border-radius: 5px;
+    border-right-color: var(--secondary-color);
+    background-color: #fefae0;
 }
 
-#audio-player-container {
-    z-index: 1030;
+/* --- Audio Footer --- */
+.audio-footer {
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
 }
 
-#surah-header {
-    border-bottom: 1px solid #dee2e6;
+#audio-player {
+    max-width: 600px;
+    margin: auto;
+}
+
+/* --- Loading Indicator --- */
+#loading-indicator {
+    color: var(--primary-color);
+}
+
+/* --- Noor Message Modal Styling --- */
+.modal-content {
+    background-color: #f8f9fa;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    border-bottom: none;
+    padding: 1rem 1.5rem;
+}
+
+.modal-title {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+#noorMessageText {
+    font-size: 1.5rem;
+    line-height: 2.5rem;
+    color: #343a40;
+}
+
+.modal-footer {
+    border-top: none;
+    padding-top: 0;
 }
