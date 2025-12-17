@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
             surahData.translation = data.data.find(e => e.edition.type === 'translation');
 
             if (!surahData.arabic || !surahData.audio) {
-                throw new Error("Could not find essential Arabic text or audio edition in the API response.");
+                throw new Error("Could not find essential Arabic text or audio edition in the API response. The selected reciter might be invalid.");
             }
 
             renderSurah();

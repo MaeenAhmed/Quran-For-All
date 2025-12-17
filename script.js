@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Constants ---
     const QURAN_API_BASE = 'https://api.alquran.cloud/v1';
+
+    // v5.0 ARCHITECTURE: Corrected static lists for 100% reliability.
     const STATIC_SURAHS = [
         {number: 1, name: "سُورَةُ ٱلْفَاتِحَةِ", englishName: "Al-Faatiha", numberOfAyahs: 7}, {number: 2, name: "سُورَةُ ٱلْبَقَرَةِ", englishName: "Al-Baqara", numberOfAyahs: 286},
         {number: 3, name: "سُورَةُ آلِ عِمْرَانَ", englishName: "Aal-i-Imraan", numberOfAyahs: 200}, {number: 4, name: "سُورَةُ ٱلنِّسَاءِ", englishName: "An-Nisaa", numberOfAyahs: 176},
@@ -68,14 +70,24 @@ document.addEventListener('DOMContentLoaded', () => {
         {number: 111, name: "سُورَةُ ٱلْمَسَدِ", englishName: "Al-Masad", numberOfAyahs: 5}, {number: 112, name: "سُورَةُ ٱلْإِخْلَاصِ", englishName: "Al-Ikhlaas", numberOfAyahs: 4},
         {number: 113, name: "سُورَةُ ٱلْفَلَقِ", englishName: "Al-Falaq", numberOfAyahs: 5}, {number: 114, name: "سُورَةُ ٱلنَّاسِ", englishName: "An-Naas", numberOfAyahs: 6}
     ];
+    // CORRECTED Reciter identifiers
+    const STATIC_RECITERS = [
+        { name: "Mishary Rashid Alafasy", identifier: "ar.alafasy" },
+        { name: "Saad Al Ghamdi", identifier: "ar.ghamdi" }, // Corrected
+        { name: "Mahmoud Khalil Al-Husary", identifier: "ar.husary" },
+        { name: "Abdul Basit Abdul Samad (Murattal )", identifier: "ar.abdulbasitmurattal" },
+        { name: "Saud Al-Shuraim", identifier: "ar.shuraim" }, // Corrected
+        { name: "Ahmed ibn Ali al-Ajamy", identifier: "ar.ajmy" }, // Corrected
+        { name: "English - Ibrahim Walk", identifier: "en.walk" }
+    ];
 
     // --- Functions ---
 
-    function updateClocks( ) {
+    function updateClocks() {
         const now = new Date();
-        timeMakkah.textContent = now.toLocaleTimeString('en-US', { timeZone: 'Asia/Riyadh', hour12: false });
-        timePalestine.textContent = now.toLocaleTimeString('en-US', { timeZone: 'Asia/Gaza', hour12: false });
-        timeWashington.textContent = now.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour12: false });
+        timeMakkah.textContent = now.toLocaleTimeString('en-GB', { timeZone: 'Asia/Riyadh', hour12: false });
+        timePalestine.textContent = now.toLocaleTimeString('en-GB', { timeZone: 'Asia/Gaza', hour12: false });
+        timeWashington.textContent = now.toLocaleTimeString('en-GB', { timeZone: 'America/New_York', hour12: false });
     }
 
     function populateSurahs() {
@@ -96,28 +108,28 @@ document.addEventListener('DOMContentLoaded', () => {
             return data.data;
         } catch (error) {
             console.error(`Failed to fetch ${endpoint}:`, error);
-            return null; // Return null on error
+            return null;
         }
     }
 
-    async function populateSelects() {
-        const [reciters, translations] = await Promise.all([
-            fetchData('edition/type/audio'),
-            fetchData('edition/type/translation')
-        ]);
+    function populateReciters() {
+        reciterSelect.innerHTML = '';
+        STATIC_RECITERS.forEach(reciter => {
+            reciterSelect.add(new Option(reciter.name, reciter.identifier));
+        });
+        reciterSelect.value = localStorage.getItem('selectedReciter') || 'ar.alafasy';
+    }
 
-        reciterSelect.innerHTML = ''; // Clear "Loading..."
-        if (reciters) {
-            reciters.forEach(reciter => reciterSelect.add(new Option(reciter.englishName, reciter.identifier)));
-            reciterSelect.value = localStorage.getItem('selectedReciter') || 'ar.alafasy';
-        } else {
-            reciterSelect.add(new Option('فشل تحميل القراء', ''));
-        }
-
-        translationSelect.innerHTML = ''; // Clear "Loading..."
+    async function populateTranslations() {
+        translationSelect.innerHTML = '';
         translationSelect.add(new Option('بدون ترجمة', 'none'));
+        const translations = await fetchData('edition/type/translation');
         if (translations) {
-            translations.forEach(translation => translationSelect.add(new Option(`${translation.englishName} (${translation.language})`, translation.identifier)));
+            translations.forEach(translation => {
+                if(translation.language && translation.language !== 'none'){
+                    translationSelect.add(new Option(`${translation.englishName} (${translation.language})`, translation.identifier));
+                }
+            });
             translationSelect.value = localStorage.getItem('selectedTranslation') || 'en.sahih';
         } else {
             translationSelect.add(new Option('فشل تحميل التراجم', ''));
@@ -144,10 +156,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- App Initialization ---
     function initializeApp() {
         updateClocks();
-        setInterval(updateClocks, 1000); // Update clocks every second
+        setInterval(updateClocks, 1000);
 
-        populateSurahs();   // INSTANTLY load surahs
-        populateSelects();  // Load dropdowns in the background
+        populateSurahs();
+        populateReciters();
+        populateTranslations();
     }
 
     initializeApp();
