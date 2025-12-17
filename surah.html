@@ -15,9 +15,10 @@
     </script>
 
     <link rel="stylesheet" href="style.css">
+    <!-- تضمين الخطوط القرآنية -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
@@ -28,16 +29,21 @@
     <main>
         <div id="audio-player-section">
             <h3>الاستماع للسورة</h3>
-            <label for="reciter-select">اختر القارئ:</label>
             <select id="reciter-select"></select>
-            <audio id="audio-player" controls>
+            <audio id="audio-player" controls preload="none"> <!-- preload="none" لتحسين الأداء -->
                 <source src="" type="audio/mpeg">
                 متصفحك لا يدعم تشغيل الصوت.
             </audio>
+            <p id="audio-error" class="error-message" style="display:none;">عذرًا، حدث خطأ أثناء تحميل الملف الصوتي.</p>
         </div>
 
-        <div id="ayah-list-container">
-            <div class="loading-spinner"></div>
+        <div class="mushaf-container">
+            <div class="bismillah" id="bismillah-display" style="display:none;">
+                بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+            </div>
+            <div id="ayah-text-container" class="mushaf-text">
+                <div class="loading-spinner"></div>
+            </div>
         </div>
         <a href="index.html" class="back-link">العودة إلى القائمة الرئيسية</a>
     </main>

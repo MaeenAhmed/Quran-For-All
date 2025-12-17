@@ -1,9 +1,11 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const surahTitle = document.getElementById('surah-title');
     const surahSubtitle = document.getElementById('surah-subtitle');
-    const ayahContainer = document.getElementById('ayah-list-container');
+    const ayahContainer = document.getElementById('ayah-text-container');
     const reciterSelect = document.getElementById('reciter-select');
     const audioPlayer = document.getElementById('audio-player');
+    const audioError = document.getElementById('audio-error');
+    const bismillahDisplay = document.getElementById('bismillah-display');
 
     const reciters = {
         "Abdulaziz_Al-Zahrani": "عبدالعزيز الزهراني (سحيم)",
@@ -29,36 +31,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     try {
-        const response = await fetch(`https://api.alquran.cloud/v1/surah/${surahNumber}/editions/quran-uthmani,en.sahih` );
+        const response = await fetch(`https://api.alquran.cloud/v1/surah/${surahNumber}` );
         if (!response.ok) throw new Error('Network response was not ok.');
         
         const data = await response.json();
-        const arabicData = data.data[0];
-        const englishData = data.data[1];
+        const surahData = data.data;
 
-        surahTitle.textContent = `سورة ${arabicData.name}`;
-        surahSubtitle.textContent = `${arabicData.englishName} - ${arabicData.numberOfAyahs} Ayahs`;
-        document.title = `سورة ${arabicData.name} - Quran For All`;
-        ayahContainer.innerHTML = '';
+        surahTitle.textContent = `سورة ${surahData.name}`;
+        surahSubtitle.textContent = `${surahData.englishName} - ${surahData.numberOfAyahs} Ayahs`;
+        document.title = `سورة ${surahData.name} - Quran For All`;
+        
+        // عرض البسملة إذا لم تكن سورة التوبة
+        if (surahNumber != 9 && surahNumber != 1) {
+            bismillahDisplay.style.display = 'block';
+        }
 
-        arabicData.ayahs.forEach((ayah, index) => {
-            const ayahCard = document.createElement('div');
-            ayahCard.className = 'ayah-card';
-            ayahCard.innerHTML = `
-                <div class="ayah-header">
-                    <span class="ayah-number">${ayah.numberInSurah}</span>
-                </div>
-                <p class="ayah-arabic">${ayah.text}</p>
-                <p class="ayah-english">${englishData.ayahs[index].text}</p>
-            `;
-            ayahContainer.appendChild(ayahCard);
+        let fullSurahText = '';
+        surahData.ayahs.forEach(ayah => {
+            fullSurahText += `${ayah.text} <span class="ayah-marker">﴿${ayah.numberInSurah}﴾</span> `;
         });
+        
+        ayahContainer.innerHTML = fullSurahText;
 
         updateAudioPlayer();
 
     } catch (error) {
         console.error('Error fetching surah details:', error);
-        ayahContainer.innerHTML = '<p style="color: red;">فشل تحميل بيانات السورة. يرجى التحقق من اتصالك بالإنترنت.</p>';
+        ayahContainer.innerHTML = '<p class="error-message">فشل تحميل بيانات السورة. يرجى التحقق من اتصالك بالإنترنت.</p>';
     }
 
     function updateAudioPlayer() {
@@ -67,7 +66,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const audioUrl = `https://server11.mp3quran.net/${reciterIdentifier}/${paddedSurahNumber}.mp3`;
         
         audioPlayer.src = audioUrl;
-        console.log(`Audio URL set to: ${audioUrl}` );
+        audioError.style.display = 'none'; // إخفاء رسالة الخطأ عند محاولة جديدة
+        console.log(`Attempting to load audio: ${audioUrl}` );
 
         if (typeof gtag === 'function') {
             gtag('event', 'listen_to_surah', {
@@ -78,4 +78,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     reciterSelect.addEventListener('change', updateAudioPlayer);
+
+    // معالجة خطأ تحميل الصوت
+    audioPlayer.addEventListener('error', () => {
+        console.error("Failed to load audio file.");
+        audioError.style.display = 'block';
+    });
 });
