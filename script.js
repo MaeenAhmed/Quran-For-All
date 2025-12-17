@@ -1,9 +1,10 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', ( ) => {
     const surahGrid = document.getElementById('surah-grid');
     const reciterSelect = document.getElementById('reciter-select');
     const translationSelect = document.getElementById('translation-select');
     const loadingIndicator = document.getElementById('loading-indicator');
 
+    // THE ONLY CHANGE IS HERE: http -> https
     const QURAN_API_BASE = 'https://api.alquran.cloud/v1';
 
     function showLoading(show ) {
