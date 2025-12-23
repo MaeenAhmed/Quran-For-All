@@ -1,98 +1,46 @@
-:root {
-    --primary-color: #2a9d8f;
-    --secondary-color: #e9c46a;
-    --background-color: #f8f9fa;
-    --text-color: #343a40;
-    --arabic-font: 'Amiri Quran', serif;
-    --english-font: 'Roboto', sans-serif;
-}
-body {
-    font-family: var(--english-font);
-    background-color: var(--background-color);
-    color: var(--text-color);
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-main {
-    flex-grow: 1;
-}
-.arabic-text {
-    font-family: var(--arabic-font);
-    font-size: 1.5rem;
-    line-height: 2.5rem;
-}
-header h1, header p {
-    color: var(--primary-color);
-}
-#world-clocks .card {
-    border-color: var(--primary-color);
-}
-#world-clocks .card-title {
-    color: var(--primary-color);
-}
-.surah-card {
-    text-decoration: none;
-    color: var(--text-color);
-    border: 1px solid #dee2e6;
-    border-radius: 10px;
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
-.surah-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    border-color: var(--primary-color);
-}
-.surah-card .card-title {
-    color: var(--primary-color);
-}
-#surah-header {
-    border-bottom: 2px solid var(--primary-color);
-}
-.ayah-block {
-    background-color: #ffffff;
-    border-radius: 10px;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    border-right: 5px solid transparent;
-    transition: border-color 0.3s;
-}
-.ayah-text {
-    text-align: justify;
-    margin-bottom: 1rem;
-}
-.translation-text {
-    font-size: 0.95rem;
-    color: #6c757d;
-    border-top: 1px dashed #e0e0e0;
-    padding-top: 1rem;
-    margin-top: 1rem;
-    text-align: left;
-    direction: ltr;
-}
-.ayah-number {
-    font-family: var(--arabic-font);
-    color: var(--primary-color);
-    font-size: 1.2rem;
-    font-weight: bold;
-}
-.play-button {
-    cursor: pointer;
-    color: var(--primary-color);
-    font-size: 1.5rem;
-    transition: color 0.2s;
-}
-.play-button:hover {
-    color: var(--secondary-color);
-}
-.ayah-highlight {
-    border-right-color: var(--secondary-color);
-    background-color: #fefae0;
-}
-.audio-footer {
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-}
-#audio-player {
-    max-width: 600px;
-    margin: auto;
-}
+/* --- إعدادات عامة --- */
+body { font-family: 'Cairo', sans-serif; margin: 0; padding: 0; background-color: #f4f4f9; color: #333; line-height: 1.6; }
+header { background-color: #004d40; color: #fff; padding: 1.5rem 1rem; border-bottom: 5px solid #00796b; text-align: center; }
+header h1 { margin: 0; font-size: 2.2rem; }
+.main-nav { margin-top: 1rem; }
+.main-nav a { color: #fff; text-decoration: none; margin: 0 15px; font-size: 1.1rem; transition: color 0.2s; }
+.main-nav a:hover { color: #80cbc4; }
+main { padding: 1rem; max-width: 1000px; margin: 2rem auto; }
+.error-message { color: #D32F2F; text-align: center; padding: 10px; background-color: #FFCDD2; border: 1px solid #D32F2F; border-radius: 5px; }
+.loading-spinner { border: 5px solid #f3f3f3; border-top: 5px solid #00796b; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 50px auto; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* --- الصفحة الرئيسية --- */
+#message-of-light { background-color: #fff; border-right: 5px solid #00796b; padding: 1.5rem; margin-bottom: 2rem; border-radius: 5px; text-align: right; }
+#quran-surahs h2 { text-align: center; color: #004d40; border-bottom: 2px solid #eee; padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
+#surah-list-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+.surah-card { background-color: #fff; border: 1px solid #ddd; border-radius: 5px; padding: 1rem; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; text-decoration: none; color: inherit; display: block; }
+.surah-card:hover { transform: translateY(-5px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.surah-card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; margin-bottom: 0.5rem; }
+.surah-name { font-family: 'Amiri Quran', serif; font-size: 1.5rem; font-weight: bold; color: #004d40; }
+.surah-number { background-color: #00796b; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+.surah-details { font-size: 0.9rem; color: #666; }
+
+/* --- صفحة القارئ (reader.html) --- */
+#reader-controls { background-color: #fff; padding: 1rem; border-radius: 5px; margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; }
+#reader-controls label { font-weight: bold; }
+#reader-controls select { flex-grow: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+#reader-controls audio { flex-grow: 2; }
+.mushaf-container { background-color: #fff; border: 2px solid #c8bca7; padding: 2rem; border-radius: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+.bismillah { font-family: 'Amiri Quran', serif; font-size: 2rem; text-align: center; padding-bottom: 1.5rem; border-bottom: 2px solid #00796b; margin-bottom: 1.5rem; }
+.mushaf-text { font-family: 'Amiri Quran', serif; font-size: 2.5rem; line-height: 2.9; text-align: justify; direction: rtl; }
+.ayah { transition: background-color 0.3s; border-radius: 5px; }
+.ayah.highlight { background-color: #e0f2f1; }
+.ayah-marker { color: #00796b; font-size: 1.5rem; vertical-align: middle; }
+
+/* --- الصفحات الثابتة (أذكار، بث مباشر) --- */
+.static-page { background-color: #fff; padding: 2rem; border-radius: 5px; }
+.azkar-card { border: 1px solid #eee; padding: 1.5rem; margin-bottom: 1rem; border-radius: 5px; }
+.azkar-card p { font-size: 1.3rem; margin: 0; }
+.azkar-card .count { display: block; text-align: left; color: #00796b; font-weight: bold; margin-top: 10px; }
+.video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000; }
+.video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+/* --- التذييل --- */
+footer { margin-top: 3rem; padding: 1.5rem; background-color: #263238; color: #cfd8dc; text-align: center; }
+footer .credit { font-size: 1rem; color: #eceff1; margin-bottom: 0.5rem; }

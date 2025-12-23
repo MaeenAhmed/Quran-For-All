@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قراءة القرآن</title>
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-G2L9W35NKW"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag( ){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-G2L9W35NKW');
+    </script>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1 id="surah-title"></h1>
+        <nav class="main-nav">
+            <a href="index.html">العودة للفهرس</a>
+        </nav>
+    </header>
+
+    <main>
+        <div id="reader-controls">
+            <label for="reciter-select">اختر القارئ:</label>
+            <select id="reciter-select"></select>
+            <audio id="audio-player" controls></audio>
+        </div>
+
+        <div class="mushaf-container">
+            <div class="bismillah" id="bismillah-display" style="display:none;">
+                بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+            </div>
+            <div id="ayah-text-container" class="mushaf-text">
+                <div class="loading-spinner"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p class="credit">Designed & Supervised by: Eng. Maeen Ahmed Al-Gumaei</p>
+    </footer>
+
+    <script src="reader.js"></script>
+</body>
+</html>

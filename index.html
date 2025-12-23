@@ -3,15 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مشروع النور - Quran Light Project</title>
-    <meta name="description" content="مشروع قرآن إلكتروني مفتوح المصدر للقراءة والاستماع مع ترجمات متعددة.">
+    <title>مشروع القرآن للجميع</title>
     
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" integrity="sha384-nU14brUcp6StFntEOOEBvcJm4huWjB0OcIeQ3fltAfSmuZFrkAif0T+UtNGlKKQv" crossorigin="anonymous">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=3.0">
-
+    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-G2L9W35NKW"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -19,66 +13,46 @@
       gtag('js', new Date());
       gtag('config', 'G-G2L9W35NKW');
     </script>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <header class="text-center py-4">
-        <div class="container">
-            <h1 class="display-4 arabic-text">القرآن الكريم</h1>
-            <p class="lead">مشروع النور - Quran Light Project</p>
-        </div>
+    <header>
+        <h1>مشروع القرآن للجميع</h1>
+        <p class="subtitle">An Open Source Project for Spreading the Light of the Holy Quran</p>
+        <nav class="main-nav">
+            <a href="index.html">الرئيسية</a>
+            <a href="azkar.html">أذكار الصباح والمساء</a>
+            <a href="live.html">بث مباشر من مكة</a>
+        </nav>
     </header>
 
-    <!-- World Clocks Section -->
-    <section class="container my-4">
-        <div id="world-clocks" class="row text-center">
-            <div class="col-md-4 mb-3">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">مكة المكرمة</h5>
-                        <p class="card-text fs-4" id="time-makkah">--:--:--</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-3">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">فلسطين المحتلة</h5>
-                        <p class="card-text fs-4" id="time-palestine">--:--:--</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-3">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">واشنطن</h5>
-                        <p class="card-text fs-4" id="time-washington">--:--:--</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <main>
+        <section id="message-of-light">
+            <h2>رسالة من نور</h2>
+            <p id="arabic-message"></p>
+            <p id="english-message" class="translation"></p>
+            <small id="message-source"></small>
+        </section>
 
-    <main class="container my-4">
-        <div class="row mb-4 g-3">
-            <div class="col-md-6">
-                <label for="reciter-select" class="form-label">اختر القارئ:</label>
-                <select id="reciter-select" class="form-select"><option>جاري التحميل...</option></select>
+        <section id="quran-surahs">
+            <h2>فهرس السور (114 )</h2>
+            <div id="surah-list-container">
+                <div class="loading-spinner"></div>
             </div>
-            <div class="col-md-6">
-                <label for="translation-select" class="form-label">اختر ترجمة المعاني:</label>
-                <select id="translation-select" class="form-select"><option>جاري التحميل...</option></select>
-            </div>
-        </div>
-        <div id="surah-grid" class="row"></div>
+        </section>
     </main>
 
-    <footer class="text-center py-4 bg-light mt-5">
-        <p class="mb-0">بناء وهندسة: م. معين احمد الجماعي - اليمن</p>
-        <p class="mb-0" style="font-size: 0.9rem; direction: ltr;">Eng. Maeen Ahmed Al-GUMAEI 2025</p>
+    <footer>
+        <p class="credit">Designed & Supervised by: Eng. Maeen Ahmed Al-Gumaei</p>
+        <p>Quran-For-All Project - 2025</p>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-    <script src="script.js?v=3.0"></script>
+    <script src="messages.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
