@@ -1,11 +1,13 @@
+import messages from './messages.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     function displayRandomMessage() {
-        if (typeof messagesOfLight !== 'undefined' && messagesOfLight.length > 0) {
-            const randomIndex = Math.floor(Math.random() * messagesOfLight.length);
-            const message = messagesOfLight[randomIndex];
-            document.getElementById('arabic-message').textContent = message.arabic;
-            document.getElementById('english-message').textContent = message.english;
-            document.getElementById('message-source').textContent = message.source;
+        if (messages && messages.length > 0) {
+            const randomIndex = Math.floor(Math.random() * messages.length);
+            const message = messages[randomIndex];
+            document.getElementById('arabic-message').textContent = message.ar.text;
+            document.getElementById('english-message').textContent = message.en.text;
+            document.getElementById('message-source').textContent = message.ar.reference ? `(${message.ar.reference})` : '';
         }
     }
 
@@ -13,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchAndDisplaySurahs() {
         try {
-            const response = await fetch('https://api.alquran.cloud/v1/surah' );
+            const response = await fetch('https://api.alquran.cloud/v1/surah'  );
             if (!response.ok) throw new Error(`Network Error: ${response.statusText}`);
             const data = await response.json();
             if (data.code !== 200) throw new Error('Invalid data from API');
