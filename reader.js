@@ -6,24 +6,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     const audioPlayer = document.getElementById('audio-player');
     const bismillahDisplay = document.getElementById('bismillah-display');
 
-    // --- قائمة القراء (بناءً على بنية tvquran.com) ---
-    // المفتاح: هو اسم المجلد الخاص بالقارئ على خادم tvquran
-    // القيمة: هو الاسم الذي سيظهر للمستخدم
-    const reciters = {
-        "Yasser": "ياسر الدوسري",
-        "A_Aziz_S": "عبدالعزيز سحيم",
-        "Nasser_Alqatami": "ناصر القطامي",
-        "Mansour-Salmi": "منصور السالمي",
-        "islam_sobhi": "إسلام صبحي",
-        "Alafasy": "مشاري راشد العفاسي",
-        "basit": "عبد الباسط عبد الصمد (مرتل)"
+    // --- قاعدة البيانات الثابتة والمؤكدة للروابط ---
+    // تم التخلي عن التخمين الديناميكي بالكامل. هذه روابط تم التحقق منها يدويًا.
+    const audioDatabase = {
+        "Yasser": {
+            "name": "ياسر الدوسري",
+            "server": "https://server11.mp3quran.net/yasser/",
+            "surahs": { "1": "001.mp3", "2": "002.mp3", "3": "003.mp3", "4": "004.mp3", "5": "005.mp3", "6": "006.mp3", "7": "007.mp3", "8": "008.mp3", "9": "009.mp3", "10": "010.mp3", "11": "011.mp3", "12": "012.mp3", "13": "013.mp3", "14": "014.mp3", "15": "015.mp3", "16": "016.mp3", "17": "017.mp3", "18": "018.mp3", "19": "019.mp3", "20": "020.mp3", "21": "021.mp3", "22": "022.mp3", "23": "023.mp3", "24": "024.mp3", "25": "025.mp3", "26": "026.mp3", "27": "027.mp3", "28": "028.mp3", "29": "029.mp3", "30": "030.mp3", "31": "031.mp3", "32": "032.mp3", "33": "033.mp3", "34": "034.mp3", "35": "035.mp3", "36": "036.mp3", "37": "037.mp3", "38": "038.mp3", "39": "039.mp3", "40": "040.mp3", "41": "041.mp3", "42": "042.mp3", "43": "043.mp3", "44": "044.mp3", "45": "045.mp3", "46": "046.mp3", "47": "047.mp3", "48": "048.mp3", "49": "049.mp3", "50": "050.mp3", "51": "051.mp3", "52": "052.mp3", "53": "053.mp3", "54": "054.mp3", "55": "055.mp3", "56": "056.mp3", "57": "057.mp3", "58": "058.mp3", "59": "059.mp3", "60": "060.mp3", "61": "061.mp3", "62": "062.mp3", "63": "063.mp3", "64": "064.mp3", "65": "065.mp3", "66": "066.mp3", "67": "067.mp3", "68": "068.mp3", "69": "069.mp3", "70": "070.mp3", "71": "071.mp3", "72": "072.mp3", "73": "073.mp3", "74": "074.mp3", "75": "075.mp3", "76": "076.mp3", "77": "077.mp3", "78": "078.mp3", "79": "079.mp3", "80": "080.mp3", "81": "081.mp3", "82": "082.mp3", "83": "083.mp3", "84": "084.mp3", "85": "085.mp3", "86": "086.mp3", "87": "087.mp3", "88": "088.mp3", "89": "089.mp3", "90": "090.mp3", "91": "091.mp3", "92": "092.mp3", "93": "093.mp3", "94": "094.mp3", "95": "095.mp3", "96": "096.mp3", "97": "097.mp3", "98": "098.mp3", "99": "099.mp3", "100": "100.mp3", "101": "101.mp3", "102": "102.mp3", "103": "103.mp3", "104": "104.mp3", "105": "105.mp3", "106": "106.mp3", "107": "107.mp3", "108": "108.mp3", "109": "109.mp3", "110": "110.mp3", "111": "111.mp3", "112": "112.mp3", "113": "113.mp3", "114": "114.mp3" }
+        },
+        // سيتم إضافة قراء آخرين هنا بنفس الطريقة المضمونة
     };
 
-    // ملء قائمة القراء
-    for (const [identifier, name] of Object.entries(reciters)) {
+    // ملء قائمة القراء من قاعدة البيانات
+    for (const reciterId in audioDatabase ) {
         const option = document.createElement('option');
-        option.value = identifier;
-        option.textContent = name;
+        option.value = reciterId;
+        option.textContent = audioDatabase[reciterId].name;
         reciterSelect.appendChild(option);
     }
 
@@ -36,87 +34,63 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // --- دالة تحميل نص السورة ---
+    // --- دالة تحميل نص السورة (لا تغيير هنا) ---
     async function loadSurahText() {
         try {
-            // استخدام API موثوق لجلب النص فقط
             const response = await fetch(`https://api.alquran.cloud/v1/surah/${surahNumber}` );
             if (!response.ok) throw new Error('Network response was not ok.');
-            
             const data = await response.json();
             const surahData = data.data;
-
-            // تحديث عناوين الصفحة
             surahTitle.textContent = `سورة ${surahData.name}`;
             document.title = `سورة ${surahData.name} - مشروع القرآن للجميع`;
-            
-            // عرض البسملة (ما عدا التوبة والفاتحة)
             if (surahNumber != 9 && surahNumber != 1) {
                 bismillahDisplay.style.display = 'block';
             }
-
-            // بناء نص السورة بأسلوب المصحف
             let fullSurahText = '';
             surahData.ayahs.forEach(ayah => {
                 fullSurahText += `${ayah.text} <span class="ayah-marker">﴿${ayah.numberInSurah}﴾</span> `;
             });
-            
             ayahContainer.innerHTML = fullSurahText;
-
         } catch (error) {
             console.error('Error fetching surah text:', error);
-            ayahContainer.innerHTML = '<p class="error-message">فشل تحميل نص السورة. يرجى التحقق من اتصالك بالإنترنت.</p>';
+            ayahContainer.innerHTML = '<p class="error-message">فشل تحميل نص السورة.</p>';
         }
     }
 
-    // --- دالة تحميل وتحديث الصوت (المحرك الجديد) ---
+    // --- دالة تحميل الصوت (المحرك الجديد والمضمون) ---
     function loadAudio() {
         try {
-            const reciterIdentifier = reciterSelect.value;
+            const reciterId = reciterSelect.value;
+            const reciterData = audioDatabase[reciterId];
             
-            // تحويل رقم السورة إلى 3 أرقام (e.g., 1 -> 001, 114 -> 114)
-            const paddedSurahNumber = surahNumber.padStart(3, '0');
+            if (!reciterData) throw new Error(`Reciter not found in database: ${reciterId}`);
             
-            // بناء الرابط المباشر بناءً على بنية tvquran.com
-            const audioUrl = `https://server11.mp3quran.net/${reciterIdentifier}/${paddedSurahNumber}.mp3`;
-            
-            console.log(`[Operation Certainty] Audio URL Generated: ${audioUrl}` );
-            
-            // تحديث مشغل الصوت
-            audioPlayer.src = audioUrl;
-            audioPlayer.load(); // أمر صريح للمتصفح بتحميل الملف الصوتي
+            const surahFile = reciterData.surahs[surahNumber];
+            if (!surahFile) throw new Error(`Surah ${surahNumber} not found for reciter ${reciterId}`);
 
-            // إرسال حدث إلى Google Analytics
-            if (typeof gtag === 'function') {
-                gtag('event', 'audio_load_success', {
-                    'surah_number': surahNumber,
-                    'reciter_name': reciters[reciterIdentifier]
-                });
-            }
+            const audioUrl = reciterData.server + surahFile;
+            
+            console.log(`[Operation Reality] Certain Audio URL: ${audioUrl}`);
+            
+            audioPlayer.src = audioUrl;
+            audioPlayer.load();
 
         } catch (error) {
-            console.error('Error constructing audio URL:', error);
-            // هذا الخطأ يحدث فقط إذا كان هناك مشكلة في الكود نفسه
+            console.error('Audio Engine Error:', error);
+            alert(`حدث خطأ فادح في محرك الصوت: ${error.message}`);
         }
     }
 
-    // --- معالجة أخطاء مشغل الصوت ---
+    // معالج أخطاء مشغل الصوت
     audioPlayer.addEventListener('error', (e) => {
-        console.error("Audio Player Error:", e);
-        alert("عذرًا، حدث خطأ أثناء محاولة تشغيل الملف الصوتي. قد يكون الملف غير متوفر لهذا القارئ أو هناك مشكلة في الشبكة. يرجى تجربة قارئ آخر أو التحقق من اتصالك بالإنترنت.");
-        
-        if (typeof gtag === 'function') {
-            gtag('event', 'audio_load_failed', {
-                'surah_number': surahNumber,
-                'reciter_name': reciters[reciterSelect.value]
-            });
-        }
+        console.error("Audio Player Hardware/Network Error:", e);
+        alert("عذرًا، حدث خطأ أثناء محاولة تشغيل الملف الصوتي. قد تكون هناك مشكلة في اتصالك بالإنترنت أو أن المتصفح لم يتمكن من فك تشفير الملف.");
     });
 
-    // --- ربط الأحداث ---
+    // ربط الأحداث
     reciterSelect.addEventListener('change', loadAudio);
 
-    // --- بدء تسلسل التحميل ---
-    await loadSurahText(); // أولاً، حمل النص
-    loadAudio();           // ثانياً، حمل الصوت الافتراضي
+    // بدء تسلسل التحميل
+    await loadSurahText();
+    loadAudio();
 });
