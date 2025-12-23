@@ -39,9 +39,6 @@ main { padding: 1rem; max-width: 1000px; margin: 2rem auto; }
 
 /* --- الصفحات الثابتة (أذكار، بث مباشر) --- */
 .static-page { background-color: #fff; padding: 2rem; border-radius: 5px; }
-.azkar-card { border: 1px solid #eee; padding: 1.5rem; margin-bottom: 1rem; border-radius: 5px; }
-.azkar-card p { font-size: 1.3rem; margin: 0; }
-.azkar-card .count { display: block; text-align: left; color: #00796b; font-weight: bold; margin-top: 10px; }
 .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000; }
 .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 .notice { text-align: center; color: #666; font-size: 0.9rem; margin-top: 1rem; }
@@ -49,27 +46,3 @@ main { padding: 1rem; max-width: 1000px; margin: 2rem auto; }
 /* --- التذييل --- */
 footer { margin-top: 3rem; padding: 1.5rem; background-color: #263238; color: #cfd8dc; text-align: center; }
 footer .credit { font-size: 1rem; color: #eceff1; margin-bottom: 0.5rem; }
-
-/* --- تنسيقات إضافية لصفحة الأذكار --- */
-.azkar-title {
-    font-size: 2rem;
-    color: #004d40;
-    text-align: center;
-    margin-top: 2rem;
-    margin-bottom: 1.5rem;
-    border-bottom: 2px solid #00796b;
-    padding-bottom: 0.5rem;
-}
-.azkar-card .zekr-text {
-    font-size: 1.4rem;
-    line-height: 2;
-}
-.azkar-card .virtue {
-    font-size: 0.9rem;
-    color: #555;
-    background-color: #e0f2f1;
-    padding: 10px;
-    border-radius: 4px;
-    margin-top: 1rem;
-    border-right: 3px solid #00796b;
-}

@@ -1,3 +1,5 @@
+import { azkarData, azkarAudioBaseUrl } from './azkar_data.js';
+
 document.addEventListener('DOMContentLoaded', async () => {
     const surahTitle = document.getElementById('surah-title');
     const ayahContainer = document.getElementById('ayah-text-container');
@@ -5,22 +7,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     const audioPlayer = document.getElementById('audio-player');
     const bismillahDisplay = document.getElementById('bismillah-display');
 
-    // --- قاعدة البيانات الثابتة والمؤكدة للروابط (الإصدار الكامل) ---
+    // --- قاعدة البيانات المحدثة والمؤكدة للروابط من MP3Quran API ---
     const audioDatabase = {
-        "Yasser": { "name": "ياسر الدوسري", "server": "https://server11.mp3quran.net/yasser/" },
-        "A_Aziz_S": { "name": "عبدالعزيز سحيم", "server": "https://server13.mp3quran.net/azeez/" },
+        "M_Muhaissini": { "name": "محمد المحيسني", "server": "https://server11.mp3quran.net/mhsny/" },
+        "Mansour_Salmi": { "name": "منصور السالمي", "server": "https://server14.mp3quran.net/mansor/" },
+        "Islam_Sobhi": { "name": "إسلام صبحي", "server": "https://server14.mp3quran.net/islam/Rewayat-Hafs-A-n-Assem/" },
         "Nasser_Alqatami": { "name": "ناصر القطامي", "server": "https://server6.mp3quran.net/qtm/" },
-        "Mansour-Salmi": { "name": "منصور السالمي", "server": "https://server11.mp3quran.net/salmi/" },
-        "islam_sobhi": { "name": "إسلام صبحي", "server": "https://server11.mp3quran.net/islam/" },
-        "Alafasy": { "name": "مشاري راشد العفاسي", "server": "https://server8.mp3quran.net/afs/" },
-        "basit": { "name": "عبد الباسط عبد الصمد (مرتل )", "server": "https://server7.mp3quran.net/basit/" },
-        "hani": { "name": "هاني الرفاعي", "server": "https://server8.mp3quran.net/hani/" },
-        "mhsny": { "name": "محمد المحيسني", "server": "https://server8.mp3quran.net/mhsny/" }, // بديل للبراك إذا لم تتوفر روابطه
-        "banna": { "name": "محمود علي البنا", "server": "https://server11.mp3quran.net/banna/" }
+        "Hani_Rifai": { "name": "هاني الرفاعي", "server": "https://server8.mp3quran.net/hani/" },
+        "Yasser": { "name": "ياسر الدوسري", "server": "https://server11.mp3quran.net/yasser/" },
     };
 
     // ملء قائمة القراء من قاعدة البيانات
-    for (const reciterId in audioDatabase ) {
+    for (const reciterId in audioDatabase  ) {
         const option = document.createElement('option');
         option.value = reciterId;
         option.textContent = audioDatabase[reciterId].name;
@@ -37,7 +35,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function loadSurahText() {
         try {
-            const response = await fetch(`https://api.alquran.cloud/v1/surah/${surahNumber}` );
+            const response = await fetch(`https://api.alquran.cloud/v1/surah/${surahNumber}`  );
             if (!response.ok) throw new Error('Network response was not ok.');
             const data = await response.json();
             const surahData = data.data;
@@ -64,6 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (!reciterData) throw new Error(`Reciter not found: ${reciterId}`);
             
             const paddedSurahNumber = surahNumber.padStart(3, '0');
+            // MP3Quran API pattern: [Server URL] + [Surah Number padded to 3 digits] + .mp3
             const audioUrl = reciterData.server + `${paddedSurahNumber}.mp3`;
             
             console.log(`[Operation Fath] Certain Audio URL: ${audioUrl}`);
