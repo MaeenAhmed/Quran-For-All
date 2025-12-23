@@ -4,6 +4,8 @@ header { background-color: #004d40; color: #fff; padding: 1.5rem 1rem; border-bo
 header h1 { margin: 0; font-size: 2.2rem; }
 .main-nav { margin-top: 1rem; }
 .main-nav a { color: #fff; text-decoration: none; margin: 0 15px; font-size: 1.1rem; transition: color 0.2s; }
+.radio-icon { background-color: #ff9800; padding: 5px 10px; border-radius: 5px; font-weight: bold; }
+.radio-icon:hover { background-color: #fb8c00; }
 .main-nav a:hover { color: #80cbc4; }
 main { padding: 1rem; max-width: 1000px; margin: 2rem auto; }
 .error-message { color: #D32F2F; text-align: center; padding: 10px; background-color: #FFCDD2; border: 1px solid #D32F2F; border-radius: 5px; }
@@ -13,9 +15,9 @@ main { padding: 1rem; max-width: 1000px; margin: 2rem auto; }
 /* --- الصفحة الرئيسية --- */
 #message-of-light { background-color: #fff; border-right: 5px solid #00796b; padding: 1.5rem; margin-bottom: 2rem; border-radius: 5px; text-align: right; }
 #message-of-light h2 { margin-top: 0; color: #004d40; }
-#message-of-light p { font-size: 1.5rem; font-style: italic; margin-bottom: 0.5rem; margin-top: 0; }
-#message-of-light small { color: #777; display: block; margin-top: 10px; }
-#message-of-light .translation { font-size: 1rem; font-style: normal; color: #555; margin-top: 10px; border-top: 1px dashed #eee; padding-top: 10px; direction: ltr; text-align: left; }
+.hero-message p { font-size: 1.5rem; font-style: italic; margin-bottom: 0.5rem; margin-top: 0; }
+.hero-message small { color: #777; display: block; margin-top: 10px; }
+.hero-message .translation { font-size: 1rem; font-style: normal; color: #555; margin-top: 10px; border-top: 1px dashed #eee; padding-top: 10px; direction: ltr; text-align: left; }
 #quran-surahs h2 { text-align: center; color: #004d40; border-bottom: 2px solid #eee; padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
 #surah-list-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
 .surah-card { background-color: #fff; border: 1px solid #ddd; border-radius: 5px; padding: 1rem; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; text-decoration: none; color: inherit; display: block; }
@@ -33,12 +35,14 @@ main { padding: 1rem; max-width: 1000px; margin: 2rem auto; }
 .mushaf-container { background-color: #fff; border: 2px solid #c8bca7; padding: 2rem; border-radius: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
 .bismillah { font-family: 'Amiri Quran', serif; font-size: 2rem; text-align: center; padding-bottom: 1.5rem; border-bottom: 2px solid #00796b; margin-bottom: 1.5rem; }
 .mushaf-text { font-family: 'Amiri Quran', serif; font-size: 2.5rem; line-height: 2.9; text-align: justify; direction: rtl; }
+.ayah-block { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px dashed #ccc; }
+.ayah-arabic { font-family: 'Amiri Quran', serif; font-size: 2.5rem; line-height: 2.9; text-align: justify; direction: rtl; margin: 0; }
+.ayah-translation { font-family: 'Cairo', sans-serif; font-size: 1.1rem; color: #444; margin-top: 10px; direction: ltr; text-align: left; border-left: 3px solid #00796b; padding-left: 10px; }
 .ayah { transition: background-color 0.3s; border-radius: 5px; }
 .ayah.highlight { background-color: #e0f2f1; }
 .ayah-marker { color: #00796b; font-size: 1.5rem; vertical-align: middle; }
 
-/* --- الصفحات الثابتة (أذكار، بث مباشر) --- */
-.static-page { background-color: #fff; padding: 2rem; border-radius: 5px; }
+/* --- الصفحات الثابتة (أذكار، بث مباشر.static-page { background-color: #fff; padding: 2rem; border-radius: 5px; }
 .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000; }
 .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 .notice { text-align: center; color: #666; font-size: 0.9rem; margin-top: 1rem; }

@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const surahTitle = document.getElementById('surah-title');
     const ayahContainer = document.getElementById('ayah-text-container');
     const reciterSelect = document.getElementById('reciter-select');
+    const translationSelect = document.getElementById('translation-select'); // عنصر الترجمة الجديد
     const audioPlayer = document.getElementById('audio-player');
     const bismillahDisplay = document.getElementById('bismillah-display');
 
@@ -15,8 +16,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         "Yasser": { "name": "ياسر الدوسري", "server": "https://server11.mp3quran.net/yasser/" },
     };
 
+    // --- قاعدة بيانات الترجمات (من Al Quran Cloud API ) ---
+    const translationDatabase = {
+        "en.sahih": { "name": "الإنجليزية (صحيح إنترناشونال)", "identifier": "en.sahih" },
+        "en.yusufali": { "name": "الإنجليزية (يوسف علي)", "identifier": "en.yusufali" },
+        "fr.hamidullah": { "name": "الفرنسية (حميد الله)", "identifier": "fr.hamidullah" },
+        "id.indonesian": { "name": "الإندونيسية", "identifier": "id.indonesian" },
+        "de.bubenheim": { "name": "الألمانية (بوبنهايم)", "identifier": "de.bubenheim" },
+        "ru.kuliev": { "name": "الروسية (كولييف)", "identifier": "ru.kuliev" },
+        "es.cortes": { "name": "الإسبانية (كورتيس)", "identifier": "es.cortes" },
+    };
+
+    // ملء قائمة الترجمات
+    for (const translationId in translationDatabase) {
+        const option = document.createElement('option');
+        option.value = translationId;
+        option.textContent = translationDatabase[translationId].name;
+        translationSelect.appendChild(option);
+    }
+
     // ملء قائمة القراء من قاعدة البيانات
-    for (const reciterId in audioDatabase  ) {
+    for (const reciterId in audioDatabase ) {
         const option = document.createElement('option');
         option.value = reciterId;
         option.textContent = audioDatabase[reciterId].name;
@@ -31,25 +51,48 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    async function loadSurahText() {
+    async function loadSurahText(translationId = 'none') {
         try {
-            const response = await fetch(`https://api.alquran.cloud/v1/surah/${surahNumber}`  );
+            let apiUrl = `https://api.alquran.cloud/v1/surah/${surahNumber}/editions/quran-uthmani`;
+            if (translationId !== 'none' ) {
+                apiUrl += `,${translationId}`;
+            }
+
+            const response = await fetch(apiUrl);
             if (!response.ok) throw new Error('Network response was not ok.');
             const data = await response.json();
-            const surahData = data.data;
-            surahTitle.textContent = `سورة ${surahData.name}`;
-            document.title = `سورة ${surahData.name} - مشروع القرآن للجميع`;
+            
+            const quranText = data.data[0];
+            const translationText = translationId !== 'none' ? data.data[1] : null;
+
+            surahTitle.textContent = `سورة ${quranText.englishName} - ${quranText.name}`;
+            document.title = `سورة ${quranText.name} - مشروع القرآن للجميع`;
+            
             if (surahNumber != 9 && surahNumber != 1) {
                 bismillahDisplay.style.display = 'block';
+            } else {
+                bismillahDisplay.style.display = 'none';
             }
-            let fullSurahText = '';
-            surahData.ayahs.forEach(ayah => {
-                fullSurahText += `${ayah.text} <span class="ayah-marker">﴿${ayah.numberInSurah}﴾</span> `;
+
+            let fullSurahHtml = '';
+            quranText.ayahs.forEach((ayah, index) => {
+                const translationAyah = translationText ? translationText.ayahs[index] : null;
+                
+                fullSurahHtml += `<div class="ayah-block">`;
+                fullSurahHtml += `<p class="ayah-arabic">${ayah.text} <span class="ayah-marker">﴿${ayah.numberInSurah}﴾</span></p>`;
+                
+                if (translationAyah) {
+                    fullSurahHtml += `<p class="ayah-translation">${translationAyah.text}</p>`;
+                }
+                
+                fullSurahHtml += `</div>`;
             });
-            ayahContainer.innerHTML = fullSurahText;
+            
+            ayahContainer.innerHTML = fullSurahHtml;
+
         } catch (error) {
-            console.error('Error fetching surah text:', error);
-            ayahContainer.innerHTML = '<p class="error-message">فشل تحميل نص السورة.</p>';
+            console.error('Error fetching surah text or translation:', error);
+            ayahContainer.innerHTML = '<p class="error-message">فشل تحميل نص السورة أو الترجمة.</p>';
         }
     }
 
@@ -80,7 +123,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     reciterSelect.addEventListener('change', loadAudio);
+    translationSelect.addEventListener('change', () => {
+        loadSurahText(translationSelect.value);
+    });
 
-    await loadSurahText();
+    await loadSurahText(translationSelect.value);
     loadAudio();
 });
