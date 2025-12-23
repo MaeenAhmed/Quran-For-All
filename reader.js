@@ -1,5 +1,3 @@
-import { azkarData, azkarAudioBaseUrl } from './azkar_data.js';
-
 document.addEventListener('DOMContentLoaded', async () => {
     const surahTitle = document.getElementById('surah-title');
     const ayahContainer = document.getElementById('ayah-text-container');
