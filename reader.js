@@ -78,14 +78,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             quranText.ayahs.forEach((ayah, index) => {
                 const translationAyah = translationText ? translationText.ayahs[index] : null;
                 
-                fullSurahHtml += `<div class="ayah-block">`;
-                fullSurahHtml += `<p class="ayah-arabic">${ayah.text} <span class="ayah-marker">﴿${ayah.numberInSurah}﴾</span></p>`;
+                // التنسيق المتصل (Continuous Text)
+                fullSurahHtml += `${ayah.text} <span class="ayah-marker">﴿${ayah.numberInSurah}﴾</span> `;
                 
+                // إضافة الترجمة أسفل الآية مباشرة إذا كانت مختارة
                 if (translationAyah) {
                     fullSurahHtml += `<p class="ayah-translation">${translationAyah.text}</p>`;
                 }
-                
-                fullSurahHtml += `</div>`;
             });
             
             ayahContainer.innerHTML = fullSurahHtml;
