@@ -47,6 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    displayRandomMessage();
     fetchAndDisplaySurahs();
+    displayRandomMessage();
 });
