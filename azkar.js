@@ -76,6 +76,8 @@ document.addEventListener('DOMContentLoaded', () => {
             playAudioBtn.addEventListener('click', () => {
                 const audioId = playAudioBtn.getAttribute('data-audio-id');
                 if (audioId) {
+                    // بناء رابط الصوت باستخدام azkarAudioBaseUrl و audio_id
+                    // يتم إضافة .mp3 في النهاية
                     audioPlayer.src = azkarAudioBaseUrl + audioId + '.mp3';
                     audioPlayer.play();
                 }
